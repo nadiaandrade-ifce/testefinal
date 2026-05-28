@@ -1217,8 +1217,6 @@ function copiarParaSEI(tipo){
   if(!confirmarNomeSimples())return;
   var v=doVal();var rg=REG[E.r];
   var vc={efetivo:"Efetivo",substituto:"Substituto",temporario:"Temporário"}[E.v]||"";
-  var hoje=new Date();var meses=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-  var dataStr="Canindé, "+hoje.getDate()+" de "+meses[hoje.getMonth()]+" de "+hoje.getFullYear()+".";
   var titulo=tipo==="PIT"?"PLANO INDIVIDUAL DE TRABALHO (PIT)":"RELATÓRIO INDIVIDUAL DE TRABALHO (RIT)";
 
   // Cabeçalho comum (identificação)
@@ -1315,9 +1313,7 @@ function copiarParaSEI(tipo){
     }
   }
 
-  h+="<p style=\"text-align:center\">"+esc(dataStr)+"</p>";
-  h+="<p style=\"text-align:center\">_____________________________________<br/>"+esc(E.n||"Professor(a)")+"</p>";
-
+  // Sem data nem linha de assinatura: o SEI fornece a assinatura eletrônica automaticamente
   // Abre modal com pré-visualização e botão de copiar
   abrirModalCopiarSEI(tipo,h);
   }catch(err){alert("Erro ao gerar HTML para SEI:\n"+err.message);console.error(err)}
@@ -1355,8 +1351,9 @@ function abrirModalCopiarSEI(tipo,htmlConteudo){
   }
   document.getElementById("tituloModalSEI").textContent="Copiar "+tipo+" para Documento Interno do SEI";
   var nomeModelo=tipo==="PIT"?"PLANO DE TRABALHO":"RELATÓRIO INDIVIDUAL DE TRABALHO";
-  document.getElementById("passoBuscaSEI").innerHTML='No SEI: <b>Incluir Documento</b> &rarr; busque por <b>"'+nomeModelo+'"</b> e escolha a opção <b>sem "('+tipo+')"</b> no nome (vem em branco).';
-  document.getElementById("obsModeloSEI").innerHTML='<b>Obs.:</b> se usar o modelo que já vem com tabelas (com "('+tipo+')" no nome), selecione tudo (Ctrl+A) e apague antes de colar, senão ficam duas tabelas.';
+  var nomeComTabela=tipo==="PIT"?"Plano Individual de Trabalho (PIT)":"Relatório Individual de Trabalho (RIT)";
+  document.getElementById("passoBuscaSEI").innerHTML='No SEI: <b>Incluir Documento</b> &rarr; busque por <b>"'+nomeModelo+'"</b>.';
+  document.getElementById("obsModeloSEI").innerHTML='<b>Obs.:</b> se usar o modelo que já vem com tabelas (<b>'+nomeComTabela+'</b>), selecione tudo (Ctrl+A) e apague antes de colar, senão ficam duas tabelas.';
   document.getElementById("preCopiaSEI").innerHTML=htmlConteudo;
   document.getElementById("btnCopiarSEI").textContent="📋 Copiar conteúdo";
   document.getElementById("btnCopiarSEI").style.background="#1565C0";
@@ -1460,13 +1457,7 @@ function pdfPIT(){
     var avisoLines=doc.splitTextToSize(avisoTxt,W-2*m);
     avisoLines.forEach(function(l){cp(5);doc.text(l,m,y);y+=4});
     doc.setTextColor(0)}
-  cp(40);y+=12;doc.setFont("helvetica","normal");doc.setFontSize(9);
-  // Data automática
-  var hoje=new Date();var meses=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-  var dataStr="Canindé, "+hoje.getDate()+" de "+meses[hoje.getMonth()]+" de "+hoje.getFullYear()+".";
-  doc.text(dataStr,W/2,y,{align:"center"});y+=16;
-  var cW=(W-2*m)/3;doc.line(m+5,y,m+cW-5,y);doc.line(m+cW+5,y,m+2*cW-5,y);doc.line(m+2*cW+5,y,W-m-5,y);y+=5;
-  doc.setFontSize(8);doc.text("Professor(a)",m+cW/2,y,{align:"center"});doc.text("Coord. de Curso",m+cW+cW/2,y,{align:"center"});doc.text("Direção de Ensino",m+2*cW+cW/2,y,{align:"center"});
+  // Sem data nem linha de assinatura: o SEI fornece a assinatura eletrônica automaticamente
   // Bloco final: orientações para anexar ao SEI
   cp(45);y+=14;doc.setFont("helvetica","italic");doc.setFontSize(7.5);doc.setTextColor(80);
   doc.text("Anexe este documento ao seu Processo SEI, com:",W/2,y,{align:"center"});y+=4;
@@ -1554,12 +1545,7 @@ function pdfRIT(){
     avisoLines.forEach(function(l){cp(5);doc.text(l,m,y);y+=4});
     doc.setTextColor(0)}
 
-  cp(40);y+=12;doc.setFontSize(9);doc.setFont("helvetica","normal");
-  var hoje=new Date();var meses=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-  var dataStr="Canindé, "+hoje.getDate()+" de "+meses[hoje.getMonth()]+" de "+hoje.getFullYear()+".";
-  doc.text(dataStr,W/2,y,{align:"center"});y+=16;
-  var cW=(W-2*m)/3;doc.line(m+5,y,m+cW-5,y);doc.line(m+cW+5,y,m+2*cW-5,y);doc.line(m+2*cW+5,y,W-m-5,y);y+=5;
-  doc.setFontSize(8);doc.text("Professor(a)",m+cW/2,y,{align:"center"});doc.text("Coord. de Curso",m+cW+cW/2,y,{align:"center"});doc.text("Direção de Ensino",m+2*cW+cW/2,y,{align:"center"});
+  // Sem data nem linha de assinatura: o SEI fornece a assinatura eletrônica automaticamente
   // Bloco final: orientações para anexar ao SEI
   cp(45);y+=14;doc.setFont("helvetica","italic");doc.setFontSize(7.5);doc.setTextColor(80);
   doc.text("Anexe este documento ao seu Processo SEI, com:",W/2,y,{align:"center"});y+=4;
@@ -1930,7 +1916,7 @@ window.addEventListener("DOMContentLoaded",function(){
     <!-- Linha divisória + intro próximo passo -->
     <div style="border-top:1px solid #eee;margin:16px 0 14px"></div>
     <div style="font-size:13px;color:#333;margin-bottom:12px;line-height:1.5">
-      <b>Próximo passo:</b> assinar digitalmente antes de anexar ao SEI. Recomendamos o assinador oficial do governo (<b>gratuito</b>).
+      <b>Próximo passo:</b> assinar digitalmente antes de anexar ao SEI.
     </div>
     <!-- Passos -->
     <div style="background:#F3F7FF;border-radius:10px;padding:16px 18px;margin-bottom:14px">
@@ -1956,8 +1942,7 @@ window.addEventListener("DOMContentLoaded",function(){
     </div>
     <!-- Aviso conta -->
     <div style="background:#FFF8E1;border-left:3px solid #F9A825;border-radius:6px;padding:10px 12px;font-size:11.5px;color:#5D4037;margin-bottom:16px;line-height:1.5">
-      💡 <b>Não consegue assinar agora?</b> Sem problemas — o PDF já está salvo no seu computador. Você pode assinar mais tarde, abrindo novamente o assinador.iti.br e fazendo upload do arquivo.<br><br>
-      Conta gov.br nível <b>bronze</b> não funciona para assinar. Para elevar o nível, use o app gov.br (validação bancária ou biometria facial).
+      ⚠️ Conta gov.br nível <b>bronze</b> não funciona para assinar. Para elevar o nível, use o app gov.br (validação bancária ou biometria facial).
     </div>
     <!-- Botões -->
     <div style="display:flex;gap:10px">
