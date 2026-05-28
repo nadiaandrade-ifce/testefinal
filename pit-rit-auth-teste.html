@@ -999,6 +999,11 @@ function aba(a){
       setTimeout(renderG,1200);
     }
   }
+  if(a==="ri"){
+    // Garante que a grade do RIT esteja preenchida e renderizada (editável)
+    garantirRitGrade();
+    if(typeof renderRitGrade==="function")renderRitGrade();
+  }
 }
 
 function salvar(){lerE();var d=JSON.stringify(E,null,2);var b=new Blob([d],{type:"application/json"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="PIT_"+(E.n||"docente").replace(/\s+/g,"_")+"_"+E.s+".json";document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u)},1500)}
@@ -1288,6 +1293,25 @@ function copiarParaSEI(tipo){
     blocoRIT("ATIVIDADES DE EXTENSÃO",E.rit?E.rit.x:"");
     blocoRIT("ATIVIDADES DE GESTÃO",E.rit?E.rit.g:"");
     blocoRIT("ATIVIDADES DE CAPACITAÇÃO",E.rit?E.rit.c:"");
+
+    // Quadro de distribuição de carga horária semanal
+    garantirRitGrade();
+    if(Object.keys(ritGradeData).length>0){
+      h+="<p><strong>DISTRIBUIÇÃO DE CARGA HORÁRIA DO DOCENTE NO SEMESTRE</strong></p>";
+      h+="<table border=\"1\" cellpadding=\"3\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;font-size:11px\">";
+      h+="<tr><th>Horário</th>";
+      DIAS.forEach(function(d){h+="<th>"+esc(d)+"</th>"});
+      h+="</tr>";
+      SLOTS.forEach(function(s){
+        h+="<tr><td><b>"+esc(s.l)+"</b><br/>"+esc(s.h)+"</td>";
+        DIAS.forEach(function(dia){
+          var cell=ritGradeData[dia+"_"+s.id];
+          h+="<td>"+(cell?esc(cell.text||""):"&nbsp;")+"</td>";
+        });
+        h+="</tr>";
+      });
+      h+="</table>";
+    }
   }
 
   h+="<p style=\"text-align:center\">"+esc(dataStr)+"</p>";
@@ -1316,14 +1340,12 @@ function abrirModalCopiarSEI(tipo,htmlConteudo){
       '<div style="background:#F3F7FF;border-radius:8px;padding:12px 14px;margin-bottom:12px">'+
       '<ol style="margin:0;padding-left:18px;font-size:12px;color:#333;line-height:1.7">'+
       '<li>Clique em <b>"📋 Copiar conteúdo"</b> abaixo.</li>'+
-      '<li>No SEI: <b>Incluir Documento</b> &rarr; busque por <b>"PLANO DE TRABALHO"</b> ou <b>"RELATÓRIO INDIVIDUAL DE TRABALHO"</b> (escolha a opção sem sigla entre parênteses, que vem em branco).</li>'+
+      '<li id="passoBuscaSEI">No SEI: <b>Incluir Documento</b> &rarr; busque pelo modelo.</li>'+
       '<li>Clique no ícone <b>laranja de folha com caneta</b> (Editar Conteúdo).</li>'+
       '<li>No editor vazio, cole com <b>Ctrl+V</b> (ou Cmd+V).</li>'+
       '<li>Salve e clique em <b>Assinar Documento</b>.</li>'+
       '</ol>'+
-      '<div style="font-size:11px;color:#777;line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px dashed #ccd">'+
-      '<b>Obs.:</b> se usar o modelo que já vem com tabelas (com sigla entre parênteses no nome), selecione tudo (Ctrl+A) e apague antes de colar, senão ficam duas tabelas.'+
-      '</div></div>'+
+      '<div id="obsModeloSEI" style="font-size:11px;color:#777;line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px dashed #ccd"></div></div>'+
       '<div style="display:flex;gap:10px">'+
       '<button onclick="copiarTextoSEI()" id="btnCopiarSEI" style="flex:1;padding:11px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📋 Copiar conteúdo</button>'+
       '<button onclick="document.getElementById(\'modalCopiarSEI\').style.display=\'none\'" style="padding:11px 20px;background:#f5f5f5;color:#333;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Fechar</button>'+
@@ -1331,6 +1353,9 @@ function abrirModalCopiarSEI(tipo,htmlConteudo){
     document.body.appendChild(m);
   }
   document.getElementById("tituloModalSEI").textContent="Copiar "+tipo+" para Documento Interno do SEI";
+  var nomeModelo=tipo==="PIT"?"PLANO DE TRABALHO":"RELATÓRIO INDIVIDUAL DE TRABALHO";
+  document.getElementById("passoBuscaSEI").innerHTML='No SEI: <b>Incluir Documento</b> &rarr; busque por <b>"'+nomeModelo+'"</b> e escolha a opção <b>sem "('+tipo+')"</b> no nome (vem em branco).';
+  document.getElementById("obsModeloSEI").innerHTML='<b>Obs.:</b> se usar o modelo que já vem com tabelas (com "('+tipo+')" no nome), selecione tudo (Ctrl+A) e apague antes de colar, senão ficam duas tabelas.';
   document.getElementById("preCopiaSEI").innerHTML=htmlConteudo;
   document.getElementById("btnCopiarSEI").textContent="📋 Copiar conteúdo";
   document.getElementById("btnCopiarSEI").style.background="#1565C0";
@@ -1453,8 +1478,6 @@ function pdfPIT(){
   doc.text("IMPORTANTE: este PDF deve ser assinado eletronicamente antes de anexar ao SEI.",W/2,y,{align:"center"});y+=4;
   doc.setFont("helvetica","normal");doc.setTextColor(80);
   doc.text("Use o assinador oficial Gov.br: https://assinador.iti.br  (login com conta gov.br)",W/2,y,{align:"center"});y+=5;
-  doc.setTextColor(21,101,192);doc.setFont("helvetica","bold");
-  doc.text("Passo a passo: https://codepen.io/Nadia-Ferreira/full/pvEVzmw",W/2,y,{align:"center"});
   doc.setTextColor(0);doc.setFont("helvetica","normal");
   doc.save("PIT_"+(E.n||"docente").replace(/\s+/g,"_")+"_"+E.s+".pdf");
   abrirModalAssinatura();
@@ -1466,6 +1489,7 @@ function pdfRIT(){
   lerE();
   if(!E.i||!E.i.trim()){alert("Preencha o campo SIAPE na aba Identificação antes de gerar o PDF.");return}
   if(!confirmarNomeCompleto())return;
+  garantirRitGrade();
   var v=doVal();var rg=REG[E.r];var j=window.jspdf;if(!j){alert("Aguarde o carregamento do jsPDF");return}
   var doc=new j.jsPDF({unit:"mm",format:"a4"});var W=210,H=297,m=15,y=m;
   function cp(n){if(y+(n||15)>H-m){doc.addPage();y=m}}
@@ -1547,8 +1571,6 @@ function pdfRIT(){
   doc.text("IMPORTANTE: este PDF deve ser assinado eletronicamente antes de anexar ao SEI.",W/2,y,{align:"center"});y+=4;
   doc.setFont("helvetica","normal");doc.setTextColor(80);
   doc.text("Use o assinador oficial Gov.br: https://assinador.iti.br  (login com conta gov.br)",W/2,y,{align:"center"});y+=5;
-  doc.setTextColor(21,101,192);doc.setFont("helvetica","bold");
-  doc.text("Passo a passo: https://codepen.io/Nadia-Ferreira/full/pvEVzmw",W/2,y,{align:"center"});
   doc.setTextColor(0);doc.setFont("helvetica","normal");
   doc.save("RIT_"+(E.n||"docente").replace(/\s+/g,"_")+"_"+E.s+".pdf");
   abrirModalAssinatura();
@@ -1595,6 +1617,24 @@ function publicarTodos(){
 
 // RIT Grade Table - stores editable cells
 var ritGradeData = {};
+
+// Garante que ritGradeData esteja populado a partir de E.grade (se ainda estiver vazio).
+// Usado antes de gerar o PDF/copiar do RIT, para o quadro de distribuição não sair vazio
+// mesmo que o usuário não tenha clicado em "Gerar RIT automaticamente".
+function garantirRitGrade(){
+  if(Object.keys(ritGradeData).length>0)return; // já preenchido (manual ou auto)
+  SLOTS.forEach(function(s){
+    var parts=s.h.split("-"),si=parts[0],sf=parts[1];
+    DIAS.forEach(function(dia){
+      var key=dia+"_"+s.id;
+      var bs=E.grade[dia]||[];
+      var b=bs.find(function(x){return x.i===si&&x.f===sf});
+      if(b){
+        ritGradeData[key]={text:b.tp==="atendimento"?"Atendimento a alunos":(b.a||""),tipo:b.tp};
+      }
+    });
+  });
+}
 
 function preencherTabelaRIT(){
   ritGradeData = {};
