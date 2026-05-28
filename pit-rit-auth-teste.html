@@ -238,9 +238,9 @@ Entrar com Google
 </ul>
 </div>
 
-<div id="rit-aviso" style="padding:18px;background:linear-gradient(135deg,#FFF8E1 0%,#FFECB3 100%);border:2px dashed #F9A825;border-radius:10px;margin-bottom:16px;text-align:center">
-<div style="font-size:13px;color:#795548;margin-bottom:12px;line-height:1.5">Clique abaixo para preencher automaticamente o seu relatório com base nas informações declaradas no PIT.<br><span style="font-size:11px;color:#8D6E63">Após o preenchimento, você poderá editar livremente cada campo antes de gerar o PDF.</span></div>
+<div style="text-align:center;margin-bottom:16px">
 <button class="btn" onclick="gerarRIT()" style="background:#F9A825;color:#fff;font-weight:700;font-size:14px;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(249,168,37,.3)" title="Pré-preenche os campos do RIT a partir do PIT">✨ Gerar RIT automaticamente</button>
+<div id="rit-aviso" style="font-size:11px;color:#8D6E63;margin-top:8px;line-height:1.5">Preenche o relatório com base nas informações do PIT. Após o preenchimento, você poderá editar livremente cada campo antes de gerar.</div>
 </div>
 <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;color:var(--gd)">Ensino executado</label><textarea id="re" rows="7"></textarea></div>
 <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;color:var(--gd)">Pesquisa</label><textarea id="rp" rows="4"></textarea></div>
@@ -1116,7 +1116,8 @@ function gerarRIT(){
   $("rx").value=extTxt?(extTxt+"\n\nRelatar andamento..."):"Nenhuma atividade de extensão prevista no PIT.";
   var gi=E.gestao.concat(E.comissoes);
   $("rgg").value=gi.length>0?gi.map(function(x){return"\u2022 "+x.tipo+" \u2014 "+x.detalhe+" ("+x.ch+"h/sem)"}).join("\n")+"\n\nAtividades desenvolvidas...":"Nenhuma atividade de gestão/comissão prevista no PIT.";
-  $("rc").value="\u2014";var av=$("rit-aviso");if(av)av.style.display="none";
+  $("rc").value="\u2014";
+  var av=$("rit-aviso");if(av){av.innerHTML="✓ RIT preenchido com base no PIT. Você pode editar os campos abaixo livremente.";av.style.color="#2E7D32";av.style.fontWeight="600";}
   preencherTabelaRIT();
   aba("ri");
 }
@@ -1623,12 +1624,19 @@ var ritGradeData = {};
 // mesmo que o usuário não tenha clicado em "Gerar RIT automaticamente".
 function garantirRitGrade(){
   if(Object.keys(ritGradeData).length>0)return; // já preenchido (manual ou auto)
+  popularRitGradeDeEgrade();
+}
+
+// Normaliza horário para comparação tolerante (remove espaços, padroniza)
+function normHora(x){return String(x||"").replace(/\s+/g,"").replace(/^(\d):/,"0$1:")}
+
+function popularRitGradeDeEgrade(){
   SLOTS.forEach(function(s){
-    var parts=s.h.split("-"),si=parts[0],sf=parts[1];
+    var parts=s.h.split("-"),si=normHora(parts[0]),sf=normHora(parts[1]);
     DIAS.forEach(function(dia){
       var key=dia+"_"+s.id;
       var bs=E.grade[dia]||[];
-      var b=bs.find(function(x){return x.i===si&&x.f===sf});
+      var b=bs.find(function(x){return normHora(x.i)===si&&normHora(x.f)===sf});
       if(b){
         ritGradeData[key]={text:b.tp==="atendimento"?"Atendimento a alunos":(b.a||""),tipo:b.tp};
       }
@@ -1638,17 +1646,7 @@ function garantirRitGrade(){
 
 function preencherTabelaRIT(){
   ritGradeData = {};
-  SLOTS.forEach(function(s){
-    var parts=s.h.split("-"),si=parts[0],sf=parts[1];
-    DIAS.forEach(function(dia){
-      var key=dia+"_"+s.id;
-      var bs=E.grade[dia]||[];
-      var b=bs.find(function(x){return x.i===si&&x.f===sf});
-      if(b){
-        ritGradeData[key]={text:b.tp==="atendimento"?"Atendimento a alunos":(b.a||""),tipo:b.tp};
-      }
-    });
-  });
+  popularRitGradeDeEgrade();
   renderRitGrade();
 }
 
