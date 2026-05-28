@@ -989,10 +989,19 @@ function aba(a){
   document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active")});
   document.querySelector('[data-tab="'+a+'"]').classList.add("active");
   ["id","en","ou","gr","ri"].forEach(function(x){$("a-"+x).classList.toggle("hd",x!==a)});
-  if(a==="gr")renderG();
+  if(a==="gr"){
+    renderG();
+    // Proteção contra timing: se a grade veio vazia mas há dados sendo carregados,
+    // tenta re-renderizar após breve intervalo (Firebase pode responder com atraso)
+    var temGrade=DIAS.some(function(d){return (E.grade[d]||[]).length>0});
+    if(!temGrade){
+      setTimeout(renderG,400);
+      setTimeout(renderG,1200);
+    }
+  }
 }
 
-function salvar(){lerE();var d=JSON.stringify(E,null,2);var b=new Blob([d],{type:"application/json"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="PIT_"+(E.n||"docente").replace(/\s+/g,"_")+"_"+E.s+".json";a.click();URL.revokeObjectURL(u)}
+function salvar(){lerE();var d=JSON.stringify(E,null,2);var b=new Blob([d],{type:"application/json"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="PIT_"+(E.n||"docente").replace(/\s+/g,"_")+"_"+E.s+".json";document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u)},1500)}
 function abrirJ(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){try{applyE(JSON.parse(e.target.result));profSelecionado=true}catch(x){alert("Erro: "+x.message)}};r.readAsText(f)}
 
 // Mascara os 4 últimos dígitos do SIAPE para exibição em PDFs (ex: "1234567" -> "123****")
@@ -1138,6 +1147,23 @@ function confirmarNomeCompleto(){
   return false;
 }
 
+// Confirmação simples (só nome) — usada no "Copiar para SEI", sem falar de PDF/assinatura
+function confirmarNomeSimples(){
+  var nomeAtual=(E.n||"").trim();
+  if(nomeConfirmado===nomeAtual)return true;
+  var msg=
+    "Confira seu NOME COMPLETO antes de continuar.\n\n"+
+    "O nome carregado do banco nem sempre é o completo.\n"+
+    "Nome atual: "+(nomeAtual||"(vazio)")+"\n\n"+
+    "Se estiver incompleto, cancele e edite na aba Identificação.\n\n"+
+    "Deseja continuar?";
+  if(confirm(msg)){
+    nomeConfirmado=nomeAtual;
+    return true;
+  }
+  return false;
+}
+
 // === EXPERIMENTAL: Gera HTML compatível com editor do SEI ===
 // Estratégia: HTML mínimo (tabelas simples, sem CSS inline complexo, sem cores),
 // para sobreviver à limpeza do CKEditor do SEI quando colado.
@@ -1161,7 +1187,7 @@ function escolherMetodo(tipo){
       '<button onclick="document.getElementById(\'modalMetodo\').style.display=\'none\';copiarParaSEI(\''+tipo+'\')" '+
       'style="text-align:left;padding:16px 18px;background:#F1F8E9;border:2px solid #AED581;border-radius:10px;cursor:pointer;transition:.15s" '+
       'onmouseover="this.style.borderColor=\'#7CB342\'" onmouseout="this.style.borderColor=\'#AED581\'">'+
-      '<div style="font-size:14px;font-weight:700;color:#33691E;margin-bottom:4px">📋 Opção 1 — Copiar e colar no SEI <span style="font-size:10px;background:#33691E;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px;vertical-align:middle">RECOMENDADO</span></div>'+
+      '<div style="font-size:14px;font-weight:700;color:#33691E;margin-bottom:4px">📋 Opção 1 — Copiar e colar no SEI</div>'+
       '<div style="font-size:12px;color:#558B2F;line-height:1.5">Cola o conteúdo direto em um documento do SEI e assina lá mesmo, sem sair do sistema. Não precisa baixar arquivo nem usar outro site.</div>'+
       '</button>'+
       // Opção B — baixar PDF e assinar gov.br
@@ -1181,84 +1207,87 @@ function escolherMetodo(tipo){
 function copiarParaSEI(tipo){
   try{
   lerE();
-  if(!E.i||!E.i.trim()){alert("Preencha o campo SIAPE na aba Identificação antes de gerar.");return}
-  if(!confirmarNomeCompleto())return;
+  if(!E.i||!E.i.trim()){alert("Preencha o campo SIAPE na aba Identificação antes de continuar.");return}
+  if(!confirmarNomeSimples())return;
   var v=doVal();var rg=REG[E.r];
   var vc={efetivo:"Efetivo",substituto:"Substituto",temporario:"Temporário"}[E.v]||"";
   var hoje=new Date();var meses=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
   var dataStr="Canindé, "+hoje.getDate()+" de "+meses[hoje.getMonth()]+" de "+hoje.getFullYear()+".";
   var titulo=tipo==="PIT"?"PLANO INDIVIDUAL DE TRABALHO (PIT)":"RELATÓRIO INDIVIDUAL DE TRABALHO (RIT)";
 
-  // Constrói HTML enxuto — só tags básicas, sem CSS complexo
+  // Cabeçalho comum (identificação)
   var h="";
   h+="<p style=\"text-align:center\"><strong>INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO CEARÁ</strong><br/>";
   h+="Campus "+esc(E.c||"")+"</p>";
   h+="<p style=\"text-align:center\"><strong>"+titulo+"</strong></p>";
-  h+="<p style=\"text-align:center\"><em>(Distribuição conforme Resolução CONSUP/IFCE nº 171/2024)</em></p>";
-  h+="<p><strong>Semestre:</strong> "+esc(E.s||"")+"</p>";
+  h+="<p><strong>Referente ao semestre letivo:</strong> "+esc(E.s||"")+"</p>";
   h+="<p>";
   h+="<strong>Nome:</strong> "+esc(E.n||"")+"<br/>";
   h+="<strong>Campus:</strong> "+esc(E.c||"")+"<br/>";
-  h+="<strong>Departamento:</strong> "+esc(E.d||"")+"<br/>";
-  h+="<strong>SIAPE:</strong> "+esc(maskSiape(E.i))+"<br/>";
-  h+="<strong>Vínculo:</strong> "+esc(vc)+"<br/>";
-  h+="<strong>Regime:</strong> "+esc(REG[E.r].l);
+  h+="<strong>Departamento ou Diretoria:</strong> "+esc(E.d||"")+"<br/>";
+  h+="<strong>Matrícula SIAPE:</strong> "+esc(maskSiape(E.i))+"<br/>";
+  h+="<strong>Tipo de vínculo:</strong> "+esc(vc)+"<br/>";
+  h+="<strong>Regime de trabalho:</strong> "+esc(REG[E.r].l);
   h+="</p>";
 
-  // Tabela única com as atividades — bordas básicas para o SEI
-  h+="<table border=\"1\" cellpadding=\"4\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%\">";
-  function linha(rotulo,valor,negrito){
-    var tag=negrito?"th":"td";
-    h+="<tr><"+tag+" style=\"text-align:left\">"+esc(rotulo)+"</"+tag+">";
-    h+="<"+tag+" style=\"text-align:right;width:80px\">"+esc(valor)+"</"+tag+"></tr>";
-  }
-  linha("1. AULAS","",true);
-  linha("1.1 Técnicos/Licenciaturas",v.aT+"h");
-  linha("1.2 Graduação/Pós",v.aG+"h");
-  linha("1.3 FIC",v.aFh+"h");
-  linha("2. MANUTENÇÃO",v.mT+"h",true);
-  linha("2.1 Preparação",v.mP+"h");
-  linha("2.2 Atendimento",v.mA+"h");
-  if(E.dsg.prim>0)linha("2.3 Design educacional EaD (1ª oferta)",v.dPrim+"h");
-  if(E.dsg.rev>0)linha("2.4 Revisão de matriz de design educacional EaD",v.dRev+"h");
-  linha("3. APOIO (fixo)","2h",true);
-  linha("4. ORIENTAÇÃO",v.oT+"h",true);
-  linha("5. EXTRACURRICULAR",v.eT+"h",true);
-  if(v.mEadT>0){
-    linha("6. MATERIAIS DIDÁTICOS - REGULARES (EaD)",v.mEadT+"h",true);
-    if(E.matEad.video>0)linha("6.1 Videoaulas",E.matEad.video+" un.");
-    if(E.matEad.livro>0)linha("6.2 Livros",E.matEad.livro+" un.");
-  }
-  linha("7. PESQUISA APLICADA",v.pT+"h",true);
-  E.pesquisa.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
-  linha("8. EXTENSÃO",v.xT+"h",true);
-  E.extensao.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
-  if(v.mFicEadT>0){
-    linha("9. MATERIAIS DIDÁTICOS - FIC (EaD)",v.mFicEadT+"h",true);
-    if(E.matFicEad.video>0)linha("9.1 Videoaulas FIC",E.matFicEad.video+" un.");
-    if(E.matFicEad.livro>0)linha("9.2 Livros FIC",E.matFicEad.livro+" un.");
-  }
-  if(E.r!=="20"){
-    linha("10. GESTÃO",v.gT+"h",true);
-    E.gestao.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
-  }
-  linha("11. COMISSÕES/REPRESENTAÇÃO",v.cT+"h",true);
-  E.comissoes.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
-  linha("TOTAL",v.tot+"h",true);
-  h+="</table>";
-
-  if(v.tot>rg.t){
-    h+="<p><em><strong>Obs.:</strong> A CH total ("+v.tot+"h) excede o regime de "+rg.t+"h. Conforme Res. 39/2016 (Art. 25), serão contabilizadas apenas "+rg.t+"h relativas ao regime de trabalho.</em></p>";
-  }
-
-  // Conteúdo específico do RIT — texto descritivo das atividades
-  if(tipo==="RIT" && E.rit){
-    var bloco=function(titulo,txt){if(txt&&txt.trim()){h+="<p><strong>"+esc(titulo)+":</strong></p><p>"+esc(txt).replace(/\n/g,"<br/>")+"</p>"}};
-    bloco("Atividades de Ensino executadas",E.rit.e);
-    bloco("Atividades de Pesquisa executadas",E.rit.p);
-    bloco("Atividades de Extensão executadas",E.rit.x);
-    bloco("Atividades de Gestão executadas",E.rit.g);
-    bloco("Capacitação",E.rit.c);
+  if(tipo==="PIT"){
+    // === PIT: tabela de atividades (Res. 171/2024) ===
+    h+="<p style=\"text-align:center\"><em>(Distribuição conforme Resolução CONSUP/IFCE nº 171/2024)</em></p>";
+    h+="<table border=\"1\" cellpadding=\"4\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%\">";
+    function linha(rotulo,valor,negrito){
+      var tag=negrito?"th":"td";
+      h+="<tr><"+tag+" style=\"text-align:left\">"+esc(rotulo)+"</"+tag+">";
+      h+="<"+tag+" style=\"text-align:right;width:80px\">"+esc(valor)+"</"+tag+"></tr>";
+    }
+    linha("1. AULAS","",true);
+    linha("1.1 Técnicos/Licenciaturas",v.aT+"h");
+    linha("1.2 Graduação/Pós",v.aG+"h");
+    linha("1.3 FIC",v.aFh+"h");
+    linha("2. MANUTENÇÃO",v.mT+"h",true);
+    linha("2.1 Preparação",v.mP+"h");
+    linha("2.2 Atendimento",v.mA+"h");
+    if(E.dsg.prim>0)linha("2.3 Design educacional EaD (1ª oferta)",v.dPrim+"h");
+    if(E.dsg.rev>0)linha("2.4 Revisão de matriz de design educacional EaD",v.dRev+"h");
+    linha("3. APOIO (fixo)","2h",true);
+    linha("4. ORIENTAÇÃO",v.oT+"h",true);
+    linha("5. EXTRACURRICULAR",v.eT+"h",true);
+    if(v.mEadT>0){
+      linha("6. MATERIAIS DIDÁTICOS - REGULARES (EaD)",v.mEadT+"h",true);
+      if(E.matEad.video>0)linha("6.1 Videoaulas",E.matEad.video+" un.");
+      if(E.matEad.livro>0)linha("6.2 Livros",E.matEad.livro+" un.");
+    }
+    linha("7. PESQUISA APLICADA",v.pT+"h",true);
+    E.pesquisa.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+    linha("8. EXTENSÃO",v.xT+"h",true);
+    E.extensao.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+    if(v.mFicEadT>0){
+      linha("9. MATERIAIS DIDÁTICOS - FIC (EaD)",v.mFicEadT+"h",true);
+      if(E.matFicEad.video>0)linha("9.1 Videoaulas FIC",E.matFicEad.video+" un.");
+      if(E.matFicEad.livro>0)linha("9.2 Livros FIC",E.matFicEad.livro+" un.");
+    }
+    if(E.r!=="20"){
+      linha("10. GESTÃO",v.gT+"h",true);
+      E.gestao.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+    }
+    linha("11. COMISSÕES/REPRESENTAÇÃO",v.cT+"h",true);
+    E.comissoes.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+    linha("TOTAL",v.tot+"h",true);
+    h+="</table>";
+    if(v.tot>rg.t){
+      h+="<p><em><strong>Obs.:</strong> A CH total ("+v.tot+"h) excede o regime de "+rg.t+"h. Conforme Res. 39/2016 (Art. 25), serão contabilizadas apenas "+rg.t+"h relativas ao regime de trabalho.</em></p>";
+    }
+  }else{
+    // === RIT: apenas quadros de texto descritivo (espelho do modelo SEI original) ===
+    h+="<p style=\"text-align:center\"><strong>ATIVIDADES DOCENTES DESENVOLVIDAS NO SEMESTRE LETIVO</strong></p>";
+    var blocoRIT=function(titulo,txt){
+      h+="<p><strong>"+esc(titulo)+"</strong></p>";
+      h+="<p>"+(txt&&txt.trim()?esc(txt).replace(/\n/g,"<br/>"):"&nbsp;")+"</p>";
+    };
+    blocoRIT("ATIVIDADES DE ENSINO",E.rit?E.rit.e:"");
+    blocoRIT("ATIVIDADES DE PESQUISA APLICADA",E.rit?E.rit.p:"");
+    blocoRIT("ATIVIDADES DE EXTENSÃO",E.rit?E.rit.x:"");
+    blocoRIT("ATIVIDADES DE GESTÃO",E.rit?E.rit.g:"");
+    blocoRIT("ATIVIDADES DE CAPACITAÇÃO",E.rit?E.rit.c:"");
   }
 
   h+="<p style=\"text-align:center\">"+esc(dataStr)+"</p>";
@@ -1276,33 +1305,25 @@ function abrirModalCopiarSEI(tipo,htmlConteudo){
     m.id="modalCopiarSEI";
     m.style.cssText="display:flex;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:20px";
     m.innerHTML='<div id="boxCopiarSEI" style="background:#fff;border-radius:14px;max-width:760px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.25);overflow:hidden">'+
-      '<div style="padding:18px 22px;background:linear-gradient(135deg,#fff7ed,#fed7aa);border-bottom:1px solid #fed7aa">'+
-      '<div style="font-size:11px;font-weight:700;color:#9a3412;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">⚠️ Função experimental</div>'+
-      '<div id="tituloModalSEI" style="font-size:16px;font-weight:700;color:#7c2d12">Copiar para Documento Interno do SEI</div>'+
-      '<div style="font-size:12px;color:#9a3412;margin-top:6px;line-height:1.5">Esta alternativa permite assinar pelo SEI sem precisar do assinador.iti.br. <b>Algumas formatações podem ser perdidas</b> ao colar — confira o resultado.</div>'+
+      '<div style="padding:18px 22px;background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-bottom:1px solid #A5D6A7">'+
+      '<div id="tituloModalSEI" style="font-size:16px;font-weight:700;color:#1B5E20">Copiar para Documento Interno do SEI</div>'+
+      '<div style="font-size:12px;color:#33691E;margin-top:6px;line-height:1.5">Cole o conteúdo em um documento do SEI e assine lá mesmo. <b>Confira a formatação</b> após colar.</div>'+
       '</div>'+
       '<div style="padding:16px 22px;flex:1;overflow-y:auto;background:#fafafa">'+
       '<div style="background:#fff;border:1px solid #ddd;padding:18px;border-radius:8px;font-family:Arial,sans-serif;font-size:13px;max-height:340px;overflow-y:auto" id="preCopiaSEI"></div>'+
       '</div>'+
       '<div style="padding:14px 22px;background:#f9fafb;border-top:1px solid #eee">'+
       '<div style="background:#F3F7FF;border-radius:8px;padding:12px 14px;margin-bottom:12px">'+
-      '<div style="font-size:11px;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📋 Como usar — escolha um caminho</div>'+
-      '<div style="font-size:12px;color:#333;line-height:1.6;margin-bottom:6px"><b>Primeiro:</b> clique em <b>"📋 Copiar conteúdo"</b> abaixo. Depois, no SEI:</div>'+
-      '<div style="background:#fff;border-radius:6px;padding:10px 12px;margin-bottom:8px">'+
-      '<div style="font-size:11.5px;font-weight:700;color:#2E7D32;margin-bottom:4px">✅ Caminho recomendado — modelo VAZIO</div>'+
-      '<ol style="margin:0;padding-left:18px;font-size:11.5px;color:#444;line-height:1.6">'+
-      '<li>Incluir Documento &rarr; busque por <b>"PLANO DE TRABALHO"</b> ou <b>"RELATÓRIO INDIVIDUAL DE TRABALHO"</b>. Escolha a opção cujo nome <b>não tenha sigla entre parênteses</b> — essa vem em branco, pronta para receber o conteúdo.</li>'+
-      '<li>Clique no ícone <b>laranja de folha com caneta</b> (Editar Conteúdo) na barra do documento.</li>'+
+      '<ol style="margin:0;padding-left:18px;font-size:12px;color:#333;line-height:1.7">'+
+      '<li>Clique em <b>"📋 Copiar conteúdo"</b> abaixo.</li>'+
+      '<li>No SEI: <b>Incluir Documento</b> &rarr; busque por <b>"PLANO DE TRABALHO"</b> ou <b>"RELATÓRIO INDIVIDUAL DE TRABALHO"</b> (escolha a opção sem sigla entre parênteses, que vem em branco).</li>'+
+      '<li>Clique no ícone <b>laranja de folha com caneta</b> (Editar Conteúdo).</li>'+
       '<li>No editor vazio, cole com <b>Ctrl+V</b> (ou Cmd+V).</li>'+
       '<li>Salve e clique em <b>Assinar Documento</b>.</li>'+
-      '</ol></div>'+
-      '<div style="background:#fff;border-radius:6px;padding:10px 12px">'+
-      '<div style="font-size:11.5px;font-weight:700;color:#9a3412;margin-bottom:4px">📄 Alternativa — modelo com tabelas "(PIT)" / "(RIT)"</div>'+
-      '<div style="font-size:11px;color:#777;line-height:1.5">Se escolher o modelo que já vem com as tabelas (com "(PIT)" ou "(RIT)" no nome), será necessário <b>selecionar tudo (Ctrl+A) e apagar</b> o conteúdo existente antes de colar — caso contrário ficam duas tabelas. Por isso, recomendamos o modelo vazio acima.</div>'+
+      '</ol>'+
+      '<div style="font-size:11px;color:#777;line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px dashed #ccd">'+
+      '<b>Obs.:</b> se usar o modelo que já vem com tabelas (com sigla entre parênteses no nome), selecione tudo (Ctrl+A) e apague antes de colar, senão ficam duas tabelas.'+
       '</div></div>'+
-      '<div style="background:#FFF8E1;border-left:3px solid #F9A825;border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:11.5px;color:#5D4037;line-height:1.5">'+
-      '💡 <b>Você pode editar livremente</b> o conteúdo dentro do SEI. Se faltar algum item específico do IFCE, basta inseri-lo manualmente no editor antes de assinar.'+
-      '</div>'+
       '<div style="display:flex;gap:10px">'+
       '<button onclick="copiarTextoSEI()" id="btnCopiarSEI" style="flex:1;padding:11px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📋 Copiar conteúdo</button>'+
       '<button onclick="document.getElementById(\'modalCopiarSEI\').style.display=\'none\'" style="padding:11px 20px;background:#f5f5f5;color:#333;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Fechar</button>'+
@@ -1564,7 +1585,7 @@ function publicarTodos(){
   ref.set(data,{merge:true}).then(function(){
     if(btn){btn.disabled=false;btn.innerHTML="&#128225; Publicar";}
     mostrarSyncStatus("ok");
-    alert("✅ Horário publicado com sucesso!\n\nSeus alunos já podem consultar em "+(window.location.origin||"")+"/consulta-teste.html");
+    alert("✅ Horário publicado com sucesso!\n\nForam publicados seus horários de aulas e de atendimento a alunos.\n\nSeus alunos já podem consultar em "+(window.location.origin||"")+"/consulta-teste.html");
   }).catch(function(e){
     if(btn){btn.disabled=false;btn.innerHTML="&#128225; Publicar";}
     mostrarSyncStatus("erro");
