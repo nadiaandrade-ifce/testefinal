@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.gstatic.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://apis.google.com https://accounts.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://accounts.google.com https://securetoken.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://apis.google.com; frame-ancestors 'none';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Sistema PIT/RIT — IFCE Campus Canindé</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--g1:#1B5E20;--g2:#2E7D32;--g3:#43A047;--g4:#66BB6A;--gbg:#E8F5E9;--gbg2:#C8E6C9;--gd:#0D3B0F;--red:#C62828;--gold:#F9A825;--blue:#1565C0;--bg:#F4F6F4;--card:#FFF;--bdr:#D5DDD5;--txt:#1A2E1A;--txt2:#4A5E4A;--r:8px}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--bg);color:var(--txt);padding:0;line-height:1.5}
+.ctn{max-width:1060px;margin:0 auto;padding:12px 16px}
+.hdr{background:linear-gradient(135deg,var(--gd),var(--g1) 60%,var(--g2));color:#fff;border-bottom:4px solid var(--gold)}
+.hdr-in{max-width:1060px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:14px 20px;flex-wrap:wrap}
+.hdr-logo{height:58px;flex-shrink:0}
+.hdr-t{flex:1}.hdr-t h1{font-size:18px;font-weight:700}.hdr-t p{font-size:12px;opacity:.85;margin-top:2px}.hdr-t .sub{font-size:12px;font-weight:300;opacity:.7}
+.hdr-sem{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:6px 14px;font-size:13px;font-weight:600}
+.sbar{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--bdr);padding:10px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.sbar-in{max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.si{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--txt2)}
+.sa{display:flex;gap:6px;flex-wrap:wrap}
+.b{display:inline-block;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;background:var(--gbg);color:var(--g1)}
+.b-ok{background:#E8F5E9;color:#1B5E20}.b-w{background:#FFF8E1;color:#E65100}.b-e{background:#FFEBEE;color:#B71C1C}.b-i{background:#E3F2FD;color:#0D47A1}
+.btn{padding:7px 14px;border:1px solid var(--bdr);background:var(--card);border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;color:var(--txt);transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{background:var(--gbg);border-color:var(--g3)}.btn-p{background:var(--g1);color:#fff;border-color:var(--g1)}.btn-p:hover{background:var(--g2)}
+.btn-s{padding:5px 10px;font-size:12px}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--gbg2);overflow-x:auto;background:var(--card);margin-bottom:14px;border-radius:var(--r) var(--r) 0 0}
+.tab{background:0;border:none;padding:11px 18px;cursor:pointer;font-size:13px;font-weight:500;color:var(--txt2);border-bottom:3px solid transparent;white-space:nowrap;font-family:inherit;transition:all .15s}
+.tab.active{color:var(--g1);border-bottom-color:var(--g1);background:var(--gbg)}.tab:hover{color:var(--g1);background:var(--gbg)}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 20px;margin-bottom:12px}
+.ct{font-size:15px;font-weight:700;margin-bottom:3px;color:var(--gd)}.cs{font-size:12px;color:var(--txt2);margin-bottom:12px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.fg label{display:block;font-size:11px;color:var(--txt2);margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+input[type="text"],input[type="number"],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--bdr);border-radius:var(--r);font-size:13px;color:var(--txt);background:var(--card);font-family:inherit}
+input[type="number"]{text-align:right;max-width:100px}
+textarea{resize:vertical;min-height:70px;font-family:inherit;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--g1);box-shadow:0 0 0 2px rgba(27,94,32,.12)}
+.rw{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #EEF2EE;gap:12px;flex-wrap:wrap}
+.rw:last-child{border-bottom:none}.rl{flex:1;min-width:0}.rm{font-size:13px;font-weight:500}.rh{font-size:11px;color:var(--txt2);margin-top:1px}
+.ir{display:grid;grid-template-columns:1fr 1fr 80px 32px;gap:6px;margin-bottom:5px;align-items:center}
+.sb{margin-top:10px;padding:9px 14px;background:var(--gbg);border-radius:var(--r);display:flex;justify-content:space-between;align-items:center;font-size:12px;border-left:3px solid var(--g3)}
+.sb.info{background:#E3F2FD;border-left-color:var(--blue)}
+.tb{padding:14px 18px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border-radius:var(--r);display:flex;justify-content:space-between;align-items:center;font-weight:600;margin-top:8px}
+.tbl{font-size:14px}.tbv{font-size:22px;font-weight:700}
+.ep{padding:10px 16px;background:#FFF8E1;color:#E65100;border-radius:var(--r);margin-bottom:12px;border-left:4px solid var(--gold)}
+.ep-t{font-size:12px;font-weight:700;margin-bottom:4px}.ep ul{margin:0;padding-left:18px;font-size:11px}
+.gt{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px}
+.gt th{background:var(--g1);color:#fff;padding:6px 4px;font-weight:600;font-size:11px;text-align:center;border:1px solid var(--gd)}
+.gt td{padding:4px 3px;border:1px solid var(--bdr);text-align:center;vertical-align:top;height:32px;font-size:10px}
+.gt .sl{background:var(--gbg);font-weight:600;color:var(--gd);font-size:10px;width:80px;text-align:left;padding-left:6px}
+.gc{min-height:28px;cursor:pointer;border-radius:3px;padding:2px;transition:background .15s}
+.gc:hover{background:var(--gbg)}
+.gc.occ{background:var(--blue);color:#fff;padding:2px 3px;font-size:9px;line-height:1.2;cursor:default}
+.gc.att{background:var(--g3);color:#fff}
+.gc .dn{font-weight:600;font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;display:block}
+.gc .tn{font-size:8px;opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;display:block}
+.gs{padding:10px 14px;border-radius:var(--r);font-size:13px;font-weight:500;margin-bottom:12px}
+.gs.ok{background:var(--gbg);color:var(--gd)}.gs.wn{background:#FFF8E1;color:#E65100}
+.hd{display:none!important}
+.ft{margin-top:20px;padding:12px;font-size:10px;color:var(--txt2);text-align:center;border-top:1px solid var(--bdr)}
+.mo{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center}
+.mb{background:#fff;border-radius:var(--r);padding:20px;max-width:400px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.mb h3{font-size:15px;margin-bottom:10px;color:var(--gd)}.mb .br{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+.ps select{width:100%;padding:9px 12px;font-size:14px;font-weight:500;border:2px solid var(--g1);border-radius:var(--r);background:var(--gbg)}
+.lg{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:11px}
+.li{display:flex;align-items:center;gap:5px}.ld{width:10px;height:10px;border-radius:2px}
+@media(max-width:600px){.hdr-in{flex-direction:column;align-items:flex-start;gap:8px}.ir{grid-template-columns:1fr 70px 32px}.ir select{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div id="loginScreen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:20px">
+<div style="background:#fff;border-radius:16px;padding:32px;max-width:420px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:center">
+<img src="data:image/png;base64,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" style="width:100px;margin-bottom:16px;border-radius:8px;background:#fff;padding:4px">
+<h2 style="font-family:'Fraunces',serif;color:#1B5E20;margin-bottom:4px">PIT/RIT — IFCE</h2>
+<p style="color:#666;font-size:13px;margin-bottom:20px">Faça login com seu email institucional <b>@ifce.edu.br</b></p>
+<button onclick="loginGoogle()" id="btnLoginGoogle" style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;border:2px solid #ddd;background:#fff;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit;color:#333;transition:all .2s" onmouseover="this.style.background='#f5f5f5';this.style.borderColor='#1B5E20'" onmouseout="this.style.background='#fff';this.style.borderColor='#ddd'">
+<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+Entrar com Google
+</button>
+<div id="loginError" style="margin-top:12px;font-size:12px;color:#C62828;display:none"></div>
+<div id="loginInfo" style="margin-top:12px;font-size:12px;color:#1B5E20;display:none"></div>
+<p style="color:#999;font-size:11px;margin-top:16px">Acesso permitido apenas para emails <b>@ifce.edu.br</b>.<br>Use a conta Google associada ao seu email institucional.</p>
+</div>
+</div>
+
+<div id="appMain" style="display:none">
+
+<div class="hdr"><div class="hdr-in">
+<img src="data:image/png;base64,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" class="hdr-logo" alt="IFCE" style="background:#fff;border-radius:6px;padding:3px">
+<div class="hdr-t"><h1>Sistema PIT/RIT — IFCE Canindé</h1><p>Plano Individual de Trabalho / Relatório Individual de Trabalho</p><div class="sub">Resoluções 39/2016, 63/2018 e 171/2024 · Nota Técnica 3/2023</div></div>
+<div class="hdr-sem" id="hdrSemBadge">—</div></div></div>
+
+<div style="background:#E3F2FD;border-bottom:2px solid #90CAF9;padding:8px 16px">
+<div style="max-width:1060px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<span style="font-size:12px;font-weight:700;color:#0D47A1">📅 Semestre:</span>
+<select id="semSelect" onchange="onSemChange()" style="padding:5px 12px;border:1px solid #90CAF9;border-radius:6px;font-size:14px;font-weight:600;background:#fff;color:#0D47A1;font-family:inherit"></select>
+<span style="font-size:11px;color:#1565C0">Dados salvos vinculados a este semestre</span>
+</div>
+</div>
+<div class="sbar"><div class="sbar-in">
+<div class="si"><span>Regime:</span><span class="b" id="sr">40h</span><span style="margin-left:6px">Total:</span><span class="b" id="st">0h/40h</span></div>
+<div class="sa">
+<button class="btn btn-p" onclick="escolherMetodo('PIT')" title="Gerar o Plano Individual de Trabalho (PIT)">&#128196; Gerar PIT</button>
+<button class="btn btn-p" onclick="escolherMetodo('RIT')" title="Gerar o Relatório Individual de Trabalho (RIT)">&#128196; Gerar RIT</button>
+
+<button class="btn btn-s" onclick="salvar()" title="Baixa backup JSON do preenchimento. Use o botão Abrir para restaurar depois.">💾 Salvar</button>
+<button class="btn btn-s" onclick="document.getElementById('ij').click()" title="Abrir backup JSON salvo anteriormente">Abrir</button>
+<button class="btn btn-s" onclick="publicarTodos()" title="Publica seus horários (aulas + atendimento) no sistema de consulta pública dos alunos" style="background:#1565C0;color:#fff;border-color:#1565C0">&#128225; Publicar</button>
+<span id="syncIndicator" style="font-size:11px;margin-left:4px"></span>
+<span id="userInfo" style="font-size:11px;margin-left:8px;color:#fff;opacity:.8"></span>
+<button id="btnLogout" class="btn btn-s" onclick="logoutUser()" style="margin-left:4px;font-size:10px;display:none">Sair</button>
+<input type="file" id="ij" accept=".json" style="display:none" onchange="abrirJ(event)">
+</div></div></div>
+
+<div class="ctn">
+<div class="ep hd" id="ep"><div class="ep-t" id="et"></div><ul id="el"></ul></div>
+
+<div class="tabs">
+<button class="tab active" data-tab="id" onclick="aba('id')">1. Identificação</button>
+<button class="tab" data-tab="en" onclick="aba('en')">2. Ensino</button>
+<button class="tab" data-tab="ou" onclick="aba('ou')">3. Pesquisa/Extensão/Gestão</button>
+<button class="tab" data-tab="gr" onclick="aba('gr')">4. Grade Semanal</button>
+<button class="tab" data-tab="ri" onclick="aba('ri')">5. RIT</button>
+</div>
+
+<div id="a-id">
+<div style="padding:14px 16px;background:#FFF3E0;border-left:4px solid #E65100;border-radius:8px;margin-bottom:14px;line-height:1.6">
+<div style="font-size:13px;font-weight:700;color:#E65100;margin-bottom:6px">⚠️ PIT e RIT são obrigatórios (Nota Técnica 3/2023)</div>
+<div style="font-size:12px;color:#5D4037">Todo docente do IFCE deve entregar semestralmente o <b>PIT</b> e o <b>RIT</b>. Consulte o <b>calendário acadêmico do seu campus</b> para verificar as datas-limite específicas de entrega no semestre vigente.</div>
+</div>
+<div class="card" style="background:#F1F8E9;border:2px solid #AED581">
+<div class="ct" style="color:#33691E">📋 Instruções de Preenchimento</div>
+<div style="font-size:13px;color:#33691E;line-height:1.7;margin-top:8px">
+<b>1.</b> Digite seu nome no campo de busca abaixo e clique sobre ele para carregar seus dados e preencha seu <b>nome completo</b> na identificação.<br>
+<b>2.</b> Insira seu <b>SIAPE completo</b> (os 4 últimos dígitos serão automaticamente ocultados no PDF, ex: 12****), confira seus dados de identificação e corrija se necessário.<br>
+<b>3.</b> Preencha a aba <b>Ensino</b> com as disciplinas, orientações e carga horária de ensino.<br>
+<b>4.</b> Preencha a aba <b>Pesquisa/Extensão/Gestão</b> se houver CH nessas atividades.<br>
+<b>5.</b> Na aba <b>Grade Semanal</b>, registre seus <b>horários de atendimento a alunos</b> e confira as aulas.<br>
+<b>6.</b> Abra a aba <b>RIT</b> e clique em <b>Gerar RIT automaticamente</b> para pré-preencher o Relatório com base no PIT.<br>
+<b>7.</b> Use o botão <b>Publicar</b> (barra superior) para enviar seus horários de aula e atendimento a alunos ao sistema de consulta.<br>
+<b>8.</b> Gere os arquivos PDF (barra superior) e anexe ao seu <b>Processo SEI</b> com um despacho de encaminhamento para a coordenação do curso onde você possui maior CH.<br>
+<b>9.</b> O sistema utiliza a <b>planilha atualizada da Resolução 171/2024</b> (Anexos I e II) para alimentar os pesos, multiplicadores e limites de carga horária. Em caso de dúvidas sobre algum item, <a href="./Planilha_Carga_Horaria_Docente_Res171.xlsx" download style="color:#1565C0;text-decoration:underline">clique aqui</a> para baixar a planilha de referência e consultá-la.<br>
+<b>10.</b> <b>Documentos institucionais de referência</b> utilizados na construção do sistema:<br>
+<span style="display:inline-block;margin-left:18px;font-size:12px;line-height:1.9">
+&bull; <a href="./Resoluo0392016RegulamentaAtividadesDocentes.pdf" target="_blank" rel="noopener" style="color:#1565C0;text-decoration:underline">Resolução 39/2016</a> — regulamenta as atividades docentes (aulas, manutenção, orientação, pesquisa, extensão, gestão e comissões)<br>
+&bull; <a href="./Resolucao_63___2018.pdf" target="_blank" rel="noopener" style="color:#1565C0;text-decoration:underline">Resolução 63/2018</a> — altera dispositivos da Res. 39/2016<br>
+&bull; <a href="./SEI_IFCE___4849667___Nota_Tecnica.pdf" target="_blank" rel="noopener" style="color:#1565C0;text-decoration:underline">Nota Técnica 3/2023</a> — orienta o preenchimento do PIT/RIT, define obrigatoriedade de divulgação dos horários de atendimento e estabelece parâmetros para a distribuição da jornada docente<br>
+&bull; <a href="./Resolucao_171_2024.pdf" target="_blank" rel="noopener" style="color:#1565C0;text-decoration:underline">Resolução 171/2024</a> — altera a Res. 63/2018 para contemplar atividades docentes em cursos na modalidade a distância (EaD), incluindo materiais didáticos e matrizes de desenho educacional
+</span>
+</div>
+</div>
+
+<div class="card"><div class="ct">Selecione o Professor</div><div class="cs">Digite seu nome e clique sobre ele na lista para carregar as aulas do quadro de horário vigente</div>
+<div class="ps"><input type="text" id="psearch" placeholder="Digite o nome do professor..." oninput="filtrarProf()" autocomplete="off" style="width:100%;padding:10px 12px;border:2px solid var(--gbg2);border-radius:8px;font-size:14px;font-family:inherit"><div id="presults" style="max-height:200px;overflow-y:auto;display:none;border:1px solid var(--gbg2);border-radius:0 0 8px 8px;background:#fff;margin-top:-2px"></div><input type="hidden" id="psel"></div></div>
+<div class="card"><div class="ct">Identificação do Servidor</div><div class="cs">Dados do cabeçalho PIT/RIT</div>
+<div class="fg">
+<div><label>Semestre</label><input type="text" id="fs" value="2026.1"></div>
+<div><label>Nome completo</label><input type="text" id="fn"></div>
+<div><label>Campus</label><input type="text" id="fc" value="Canindé"></div>
+<div><label>Departamento</label><input type="text" id="fd" value="Ensino"></div>
+<div><label>SIAPE <span style="color:#C62828">*</span></label><input type="text" id="fi" required placeholder="Obrigatório"></div>
+<div><label>Vínculo</label><select id="fv"><option value="efetivo">Efetivo</option><option value="substituto">Substituto</option><option value="temporario">Temporário</option></select></div>
+<div><label>Regime</label><select id="fr" onchange="onReg()"><option value="40DE">40h DE</option><option value="40">40h</option><option value="20">20h</option></select></div>
+</div></div></div>
+
+<div id="a-en" class="hd">
+<div class="card"><div class="ct">1. Aulas ministradas</div><div class="cs" id="as">Mín 10h / Máx 20h</div>
+<div class="rw"><div class="rl"><div class="rm">1.1 Técnicos/Licenciaturas (mín 6h)</div><div class="rh">Peso 1 · Max 20</div></div><input type="number" id="at" min="0" max="20" step="1" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">1.2 Graduação e Pós-graduação</div><div class="rh">Peso 1 · Max 20</div></div><input type="number" id="ag" min="0" max="20" step="1" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">1.3 Cursos FIC (horas totais)</div><div class="rh">Peso 0,05 · Max 400</div></div><input type="number" id="af" min="0" max="400" step="1" onchange="calc()"></div>
+<div class="sb"><span>FIC: <b id="afc">0h</b> · Subtotal:</span><span class="b" id="ab">0h</span></div>
+<div style="margin-top:16px"><div style="font-size:12px;color:var(--txt2);margin-bottom:6px;font-weight:600">Disciplinas (do banco de dados)</div><div style="font-size:11px;color:var(--txt2);margin-bottom:8px;line-height:1.5;font-style:italic">Caso necessário, é possível adicionar novas disciplinas/aulas clicando em <b>+ Disciplina</b> ou removê-las clicando no <b>×</b>.</div><div id="dl"></div><button class="btn btn-s" onclick="addD()">+ Disciplina</button></div></div>
+
+<div class="card"><div class="ct">2. Manutenção do ensino</div><div class="cs">Automático: 0,8h prep + 0,2h atendimento · Itens 2.3 e 2.4 (Res. 171/2024) preenchidos manualmente</div>
+<div class="rw"><div class="rl"><div class="rm">2.1 Preparação</div><div class="rh" id="ph">Max 14</div></div><span class="b b-i" id="mp">0h</span></div>
+<div class="rw"><div class="rl"><div class="rm">2.2 Atendimento</div><div class="rh" id="ah">Max 4</div></div><span class="b b-i" id="ma">0h</span></div>
+<div class="rw"><div class="rl"><div class="rm">2.3 Elaboração de matriz de design educacional EaD (1ª oferta)</div><div class="rh" id="dpmh">Peso 0,05 · Max 400h</div></div><input type="number" id="dp" min="0" step="1" value="0" onchange="calc()" title="Horas planejadas para elaboração de matriz de design educacional para PRIMEIRA OFERTA de componentes curriculares EaD em cursos regulares ou pós-graduação"></div>
+<div class="rw"><div class="rl"><div class="rm">2.4 Revisão de matriz de design educacional EaD</div><div class="rh" id="drvh">Peso 0,025 · Max 400h</div></div><input type="number" id="dr" min="0" step="1" value="0" onchange="calc()" title="Horas planejadas para revisão de matriz de design educacional EaD (oferta em execução ou já realizada há pelo menos 1 ano)"></div>
+<div class="sb info"><span>Subtotal manutenção (2.1 + 2.2 + 2.3 + 2.4)</span><span class="b b-i" id="mt">0h</span></div></div>
+
+<div class="card"><div class="ct">3. Apoio ao ensino (reuniões) — fixo 2h</div><div class="rw"><div class="rl"><div class="rm">3.1 Reuniões técnico-pedagógicas</div></div><span class="b b-i">2h</span></div></div>
+
+<div class="card"><div class="ct">4. Orientação ao discente</div><div class="cs" id="os">Teto: 10h</div>
+<div class="rw"><div class="rl"><div class="rm">4.1 TCC graduação</div><div class="rh">Peso 1 · Max 6</div></div><input type="number" id="ot" min="0" max="6" step="1" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">4.2 Estágio Supervisionado</div><div class="rh">Peso 1 · Max 4</div></div><input type="number" id="oe" min="0" max="4" step="1" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">4.3 Estágio c/ regulamentação</div><div class="rh">Peso 2 · Max 4</div></div><input type="number" id="oer" min="0" max="4" step="1" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">4.4 Monitoria</div><div class="rh">Peso 2 · Max 1</div></div><input type="number" id="om" min="0" max="1" step="1" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">4.5 PIBID / Permanência</div><div class="rh">Peso 10 · Max 1</div></div><input type="number" id="opb" min="0" max="1" step="1" onchange="calc()"></div>
+<div class="sb info"><span>Subtotal orientação</span><span class="b b-i" id="oo">0h</span></div></div>
+
+<div class="card"><div class="ct">5. Ensino extracurricular</div><div class="cs" id="es">Teto: 10h</div>
+<div class="rw"><div class="rl"><div class="rm">5.1 Responsável por Laboratório</div><div class="rh">Peso 8 · Max 1</div></div><input type="number" id="elab" min="0" max="1" step="1" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">5.2 Projetos complementares</div><div class="rh">Peso 1 · Max 2</div></div><input type="number" id="eprj" min="0" max="2" step="1" onchange="calc()"></div>
+<div class="sb info"><span>Subtotal extracurricular</span><span class="b b-i" id="ee">0h</span></div></div>
+
+<div class="card"><div class="ct">6. Produção de materiais didáticos — cursos regulares (EaD)</div><div class="cs" id="medas">Teto: 10h · Res. 171/2024</div>
+<div class="rw"><div class="rl"><div class="rm">6.1 Videoaulas assíncronas (videoteca dos cursos regulares)</div><div class="rh" id="medvh">Peso 2 · Max 5</div></div><input type="number" id="medv" min="0" step="1" value="0" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">6.2 Elaboração de livros</div><div class="rh">Peso 8 · Max 1</div></div><input type="number" id="medl" min="0" max="1" step="1" value="0" onchange="calc()"></div>
+<div class="sb info"><span>Subtotal materiais didáticos (regulares)</span><span class="b b-i" id="med">0h</span></div></div>
+
+<div class="tb"><span class="tbl">Total de ensino</span><span class="tbv" id="te">0h</span></div>
+</div>
+
+<div id="a-ou" class="hd">
+<div class="card"><div class="ct">7. Pesquisa aplicada</div><div class="cs" id="pss">Teto: 18h</div><div style="font-size:12px;color:#1565C0;background:#E3F2FD;padding:8px 12px;border-radius:6px;margin:8px 0;line-height:1.5">💡 Caso você desenvolva atividades de <b>pesquisa</b>, clique em <b>+ Item</b> para incluí-las. Se não houver, deixe esta seção vazia.</div><div id="pl"></div><button class="btn btn-s" onclick="addI('pesquisa')">+ Item</button><div class="sb info" style="margin-top:10px"><span>Subtotal</span><span class="b b-i" id="pt2">0h</span></div></div>
+<div class="card"><div class="ct">8. Extensão</div><div class="cs" id="exs">Teto: 18h</div><div style="font-size:12px;color:#1565C0;background:#E3F2FD;padding:8px 12px;border-radius:6px;margin:8px 0;line-height:1.5">💡 Caso você desenvolva atividades de <b>extensão</b> (cursos FIC, projetos, NAPNE, NEABI, eventos etc.), clique em <b>+ Item</b> para incluí-las. Se não houver, deixe esta seção vazia.</div><div id="xl"></div><button class="btn btn-s" onclick="addI('extensao')">+ Item</button><div class="sb info" style="margin-top:10px"><span>Subtotal</span><span class="b b-i" id="xt2">0h</span></div></div>
+<div class="card"><div class="ct">9. Produção de materiais didáticos — cursos FIC (EaD)</div><div class="cs" id="mfes">Teto: 8h · Res. 171/2024</div>
+<div class="rw"><div class="rl"><div class="rm">9.1 Videoaulas assíncronas (videoteca dos cursos FIC)</div><div class="rh" id="mfvh">Peso 2 · Max 3</div></div><input type="number" id="mfv" min="0" step="1" value="0" onchange="calc()"></div>
+<div class="rw"><div class="rl"><div class="rm">9.2 Elaboração de livros para cursos FIC</div><div class="rh">Peso 8 · Max 1</div></div><input type="number" id="mfl" min="0" max="1" step="1" value="0" onchange="calc()"></div>
+<div class="sb info"><span>Subtotal materiais didáticos (FIC)</span><span class="b b-i" id="mfe">0h</span></div></div>
+<div class="card" id="cg"><div class="ct">10. Gestão</div><div class="cs" id="gs2">Teto: 18h</div><div style="font-size:12px;color:#1565C0;background:#E3F2FD;padding:8px 12px;border-radius:6px;margin:8px 0;line-height:1.5">💡 Caso você ocupe algum <b>cargo de gestão</b> (coordenação, chefia, NTEAD, AVA etc.), clique em <b>+ Item</b> para incluí-lo. Se não houver, deixe esta seção vazia.</div><div id="gl"></div><button class="btn btn-s" onclick="addI('gestao')">+ Item</button><div class="sb info" style="margin-top:10px"><span>Subtotal</span><span class="b b-i" id="gt3">0h</span></div></div>
+<div class="card"><div class="ct">11. Comissões / Representação</div><div class="cs" id="cs3">Teto: 18h</div><div style="font-size:12px;color:#1565C0;background:#E3F2FD;padding:8px 12px;border-radius:6px;margin:8px 0;line-height:1.5">💡 Caso você participe de <b>comissões, conselhos, colegiados, NDE, CPA/CPPD</b> ou outras representações, clique em <b>+ Item</b> para incluí-las. Se não houver, deixe esta seção vazia.</div><div id="cl2"></div><button class="btn btn-s" onclick="addI('comissoes')">+ Item</button><div class="sb info" style="margin-top:10px"><span>Subtotal</span><span class="b b-i" id="ct3">0h</span></div></div>
+</div>
+
+<div id="a-gr" class="hd">
+<div class="card"><div class="ct">Distribuição Semanal</div><div class="cs">Aulas do banco de dados e horários de atendimento a estudantes</div>
+<div style="padding:12px 16px;background:#E3F2FD;border:2px solid #90CAF9;border-radius:8px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px">
+<span style="font-size:20px;flex-shrink:0">&#128161;</span>
+<div><div style="font-size:13px;font-weight:700;color:#0D47A1;margin-bottom:3px">Registre aqui suas Aulas e Atendimento a Estudantes</div>
+<div style="font-size:12px;color:#1565C0;line-height:1.5">Clique nos <b>quadros vazios</b> da grade para incluir atividades. Conforme a Nota Técnica 3/2023, os horários de atendimento devem ser pré-estabelecidos e divulgados. Para remover uma atividade, clique sobre ela.</div></div></div>
+<div class="lg" id="leg"></div><div class="gs" id="gsu">Grade: 0h</div>
+<div style="overflow-x:auto"><table class="gt" id="gtb"></table></div></div></div>
+
+<div id="a-ri" class="hd">
+<div class="card"><div class="ct">Relatório Individual de Trabalho (RIT)</div><div class="cs">Pré-preenchido do PIT — edite livremente</div>
+
+<div style="padding:14px 16px;background:#FFF3E0;border-left:4px solid #E65100;border-radius:8px;margin-bottom:14px;line-height:1.6">
+<div style="font-size:13px;font-weight:700;color:#E65100;margin-bottom:8px">⚠️ Atenção: PIT e RIT são obrigatórios (Nota Técnica 3/2023)</div>
+<ul style="margin:0;padding-left:20px;font-size:12px;color:#5D4037">
+<li><b>Prazos de entrega:</b> consulte o <b>calendário acadêmico do seu campus</b> para verificar as datas-limite de entrega do PIT e do RIT no semestre vigente (item h).</li>
+<li><b>Comprovação integral (RIT):</b> o RIT deve comprovar a execução da <b>totalidade</b> da carga horária semanal (20h ou 40h, conforme regime), não apenas as aulas (item b).</li>
+<li><b>Quadro de distribuição:</b> deve contemplar <b>todas</b> as atividades do docente (ensino, pesquisa, extensão, gestão, comissões e atendimento), com horários pré-estabelecidos (item c).</li>
+</ul>
+</div>
+
+<div id="rit-aviso" style="padding:18px;background:linear-gradient(135deg,#FFF8E1 0%,#FFECB3 100%);border:2px dashed #F9A825;border-radius:10px;margin-bottom:16px;text-align:center">
+<div style="font-size:13px;color:#795548;margin-bottom:12px;line-height:1.5">Clique abaixo para preencher automaticamente o seu relatório com base nas informações declaradas no PIT.<br><span style="font-size:11px;color:#8D6E63">Após o preenchimento, você poderá editar livremente cada campo antes de gerar o PDF.</span></div>
+<button class="btn" onclick="gerarRIT()" style="background:#F9A825;color:#fff;font-weight:700;font-size:14px;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(249,168,37,.3)" title="Pré-preenche os campos do RIT a partir do PIT">✨ Gerar RIT automaticamente</button>
+</div>
+<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;color:var(--gd)">Ensino executado</label><textarea id="re" rows="7"></textarea></div>
+<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;color:var(--gd)">Pesquisa</label><textarea id="rp" rows="4"></textarea></div>
+<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;color:var(--gd)">Extensão</label><textarea id="rx" rows="4"></textarea></div>
+<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;color:var(--gd)">Gestão / Comissões</label><textarea id="rgg" rows="4"></textarea></div>
+<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;color:var(--gd)">Capacitação</label><textarea id="rc" rows="3"></textarea></div>
+
+<div style="border-top:2px solid var(--gbg2);padding-top:16px;margin-top:8px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+<div><div class="ct">Distribuição de Carga Horária no Semestre</div>
+<div class="cs" style="margin-bottom:0">Quadro obrigatório — Nota Técnica 3/2023 item c)</div></div>
+</div>
+<div class="sb info" style="margin-bottom:12px"><span>&#128161; Este quadro é preenchido automaticamente com as aulas e horários de atendimento da Grade Semanal. Você pode editar manualmente cada célula clicando sobre ela.</span></div>
+<div class="lg" style="margin-bottom:8px">
+<div class="li"><div class="ld" style="background:#1565C0"></div><span>Aula</span></div>
+<div class="li"><div class="ld" style="background:#0277BD"></div><span>Aula (extra)</span></div>
+<div class="li"><div class="ld" style="background:#43A047"></div><span>Atendimento a alunos</span></div>
+<div class="li"><div class="ld" style="background:#7B1FA2"></div><span>Preparação</span></div>
+<div class="li"><div class="ld" style="background:#00838F"></div><span>Apoio ao Ensino (reuniões)</span></div>
+<div class="li"><div class="ld" style="background:#E65100"></div><span>Pesquisa</span></div>
+<div class="li"><div class="ld" style="background:#AD1457"></div><span>Extensão</span></div>
+<div class="li"><div class="ld" style="background:#4527A0"></div><span>Coordenação</span></div>
+<div class="li"><div class="ld" style="background:#0D47A1"></div><span>Gestão</span></div>
+<div class="li"><div class="ld" style="background:#00695C"></div><span>Orientação</span></div>
+<div class="li"><div class="ld" style="background:#F9A825"></div><span>Capacitação</span></div>
+<div class="li"><div class="ld" style="background:#558B2F"></div><span>Comissões</span></div>
+<div class="li"><div class="ld" style="background:#78909C"></div><span>Outro</span></div>
+</div>
+<div style="overflow-x:auto"><table class="gt" id="rit-grade-tbl"></table></div>
+</div>
+</div></div>
+
+<div class="ft">IFCE Campus Canindé — Sistema PIT/RIT</div>
+</div>
+
+<div class="mo hd" id="md"><div class="mb" style="max-width:400px">
+<h3 style="font-size:15px;color:#1B5E20;margin-bottom:4px">Adicionar atividade ao horário</h3>
+<p style="font-size:12px;color:var(--txt2);margin-bottom:12px" id="mi"></p>
+<div id="gradeModalBtns" style="max-height:50vh;overflow-y:auto"></div>
+<div style="margin-top:10px;display:flex;gap:8px">
+<button class="btn" onclick="fM()" style="flex:1">Cancelar</button>
+</div>
+</div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+// === FIREBASE INIT ===
+var firebaseConfig={apiKey:"AIzaSyCBQHZ-yYgP_5fQB4fiPybnzNN7qEvT2eQ",authDomain:"proposta-completa-dev.firebaseapp.com",projectId:"proposta-completa-dev",storageBucket:"proposta-completa-dev.firebasestorage.app",messagingSenderId:"101272733606",appId:"1:101272733606:web:dbcb0e49b9331a22d13167"};
+firebase.initializeApp(firebaseConfig);
+var db=firebase.firestore();
+var auth=firebase.auth();
+var currentUser=null;
+var semestreAtual="2026.1";
+var semestreVigente="";
+
+// Carrega semestres do Firestore
+function loadSemestres(){
+  return db.collection("configuracoes").doc("status").get().then(function(d){
+    if(d.exists&&d.data().vigente){semestreVigente=d.data().vigente;semestreAtual=semestreVigente;}
+    var sel=document.getElementById("semSelect");
+    if(!sel)return;
+    return db.collection("semestres").get().then(function(snap){
+      var sems=[];snap.forEach(function(s){sems.push(s.id)});
+      sems.sort(function(a,b){return b.localeCompare(a)});
+      if(sems.length===0)sems=[semestreAtual];
+      sel.innerHTML=sems.map(function(s){return'<option value="'+s+'"'+(s===semestreAtual?' selected':'')+'>'+s+(s===semestreVigente?' (vigente)':'')+'</option>'}).join('');
+      semestreAtual=sel.value;
+      var semField=document.getElementById("fs");if(semField)semField.value=semestreAtual;
+      var badge=document.getElementById("hdrSemBadge");if(badge)badge.textContent=semestreAtual;
+      // Carrega lista de professores do Firestore para o semestre vigente
+      return carregarNomesProfsFirestore();
+    }).catch(function(){});
+  }).catch(function(){});
+}
+function onSemChange(){
+  var sel=document.getElementById("semSelect");
+  if(sel)semestreAtual=sel.value;
+  var semField=document.getElementById("fs");if(semField)semField.value=semestreAtual;
+  var badge=document.getElementById("hdrSemBadge");if(badge)badge.textContent=semestreAtual;
+  // Limpa professor e reseta estado para forçar nova busca
+  profSelecionado=false;
+  $("psearch").value="";
+  $("psel").value="";
+  E=newE();
+  applyE(E);
+  aba("id");
+  // Recarrega lista de professores para o novo semestre
+  carregarNomesProfsFirestore();
+}
+
+var DB = {}; // Banco local removido — fonte primária é o Firestore (coleção 'horarios')
+
+const REG={"40DE":{l:"40h DE",t:40,amin:10,amax:20,mpmax:14,mamax:4,mamin:2,omax:18},"40":{l:"40h",t:40,amin:10,amax:20,mpmax:14,mamax:4,mamin:2,omax:18},"20":{l:"20h",t:20,amin:8,amax:12,mpmax:4,mamax:2,mamin:1,omax:4}};
+const DIAS=["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+const SLOTS=[
+{id:"AM",l:"A Manhã",h:"07:45-08:45"},{id:"BM",l:"B Manhã",h:"08:45-09:45"},
+{id:"CM",l:"C Manhã",h:"10:00-11:00"},{id:"DM",l:"D Manhã",h:"11:00-12:00"},
+{id:"AT",l:"A Tarde",h:"13:45-14:45"},{id:"BT",l:"B Tarde",h:"14:45-15:45"},
+{id:"CT",l:"C Tarde",h:"16:00-17:00"},{id:"DT",l:"D Tarde",h:"17:00-18:00"},
+{id:"AN",l:"A Noite",h:"18:30-19:20"},{id:"BN",l:"B Noite",h:"19:20-20:10"},
+{id:"CN",l:"C Noite",h:"20:30-21:20"},{id:"DN",l:"D Noite",h:"21:20-22:00"}];
+
+const LIM={pesquisa:[
+{n:"7.1 Coord. projeto pesquisa c/ fomento IFCE ou sem recursos (PRPI)",p:4,mx:3},
+{n:"7.2 Coord. projeto pesquisa c/ captação recursos externos (PRPI)",p:6,mx:2},
+{n:"7.3 Participação equipe projeto pesquisa aplicada/desenv. (PRPI)",p:3,mx:2},
+{n:"7.4 Orientação especialização / Co-orient. mestrado ou doutorado",p:2,mx:4},
+{n:"7.5 Bolsista produtividade PQ/DT CNPq",p:16,mx:1},
+{n:"7.6 Docente COLABORADOR pós-graduação stricto sensu",p:8,mx:1},
+{n:"7.7 Docente PERMANENTE pós-graduação stricto sensu",p:16,mx:1}],
+extensao:[
+{n:"8.1 Coord. projeto/programa extensão c/ fomento IFCE ou sem recursos (PROEXT)",p:4,mx:3},
+{n:"8.2 Coord. projeto/programa extensão c/ captação recursos externos (PROEXT)",p:6,mx:2},
+{n:"8.3 Participação equipe projeto/programa extensão (PROEXT), exceto FIC",p:3,mx:2},
+{n:"8.4 Coordenação de incubadoras de empresas",p:16,mx:1},
+{n:"8.5 Coordenação dos NAPNEs ou NEABIs",p:5,mx:1},
+{n:"8.6 Participação como membro dos NAPNEs ou NEABIs",p:3,mx:1},
+{n:"8.7 Cursos FIC — horas totais do curso",p:0.05,mx:240},
+{n:"8.8 Preparação + Planejamento dos cursos FIC",p:0.05,mx:120},
+{n:"8.9 Planejamento e organização de eventos de extensão",p:1,mx:2}],
+gestao:[
+{n:"10.1 Coordenador de Curso",p:18,mx:1},
+{n:"10.2 Coordenador de Setor",p:18,mx:1},
+{n:"10.3 Chefe de Departamento",p:18,mx:1},
+{n:"10.4 Diretor de Área/Setor",p:18,mx:1},
+{n:"10.5 Assessor da Reitoria",p:18,mx:1},
+{n:"10.6 Coordenador de implantação de Campus",p:18,mx:1},
+{n:"10.7 Assistente de Pró-Reitoria ou Chefe de Gabinete de Campus",p:18,mx:1},
+{n:"10.8 Coord. programa institucional: ensino, pesquisa ou extensão",p:18,mx:1},
+{n:"10.9 Coordenador do NTEAD",p:18,mx:1},
+{n:"10.10 Responsável pelo Desenho Pedagógico do NTEAD",p:12,mx:1},
+{n:"10.11 Administrador do Ambiente Virtual de Aprendizagem (AVA)",p:12,mx:1}],
+comissoes:[
+{n:"11.1 Conselhos, comissões ou comitês permanentes institucionais",p:3,mx:1},
+{n:"11.2 CPA / CPPD (Central)",p:8,mx:1},
+{n:"11.3 CPA / CPPD (Local)",p:4,mx:1},
+{n:"11.4 Conselhos ou comitês permanentes externos",p:1,mx:1},
+{n:"11.5 Colegiado de Cursos",p:1,mx:2},
+{n:"11.6 Núcleo Docente Estruturante (NDE)",p:1,mx:2},
+{n:"11.7 Comissão de Processo Administrativo Disciplinar",p:4,mx:1},
+{n:"11.8 Participação em Direção Sindical como titular",p:4,mx:1},
+{n:"11.9 Fiscalização de contrato",p:1,mx:2}]};
+
+const ELMAP={pesquisa:"pl",extensao:"xl",gestao:"gl",comissoes:"cl2"};
+
+let E=newE(), mSlot=null;
+// Flag para lembrar qual nome o usuário já confirmou nesta sessão (evita pedir 2x ao gerar PIT e RIT)
+let nomeConfirmado=null;
+function newE(){return{s:semestreAtual||"2026.1",n:"",c:"Canindé",d:"Ensino",i:"",v:"efetivo",r:"40DE",
+au:{t:0,g:0,f:0,disc:[]},ori:{t:0,e:0,er:0,m:0,p:0},ex:{l:0,p:0},
+dsg:{prim:0,rev:0},
+matEad:{video:0,livro:0},
+matFicEad:{video:0,livro:0},
+pesquisa:[],extensao:[],gestao:[],comissoes:[],
+grade:{Segunda:[],Terça:[],Quarta:[],Quinta:[],Sexta:[],Sábado:[]},
+rit:{e:"",p:"",x:"",g:"",c:"",pa:""}}}
+
+const r1=n=>Math.round(n*10)/10;
+const $=id=>document.getElementById(id);
+const nv=id=>Number($(id).value)||0;
+const tv=id=>$(id).value||"";
+function esc(s){return s==null?"":String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+
+function remAc(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
+var NOMES=[];
+
+// Carrega lista de professores do Firestore para o semestre atual
+function carregarNomesProfsFirestore(){
+  return db.collection("horarios").get().then(function(snap){
+    var nomes={};
+    var prefixo=semestreAtual+"_";
+    snap.forEach(function(doc){
+      var d=doc.data();
+      // Filtra docs do semestre atual (id começa com "{semestre}_") OU usa o campo "professor"/"nome"
+      if(doc.id.indexOf(prefixo)===0 || (d&&d.semestre===semestreAtual)){
+        var nm=(d&&(d.professor||d.nome))||doc.id.replace(prefixo,"").replace(/_/g," ");
+        if(nm)nomes[nm]=true;
+      } else if(!d.semestre){
+        // Documento legado sem prefixo de semestre — tenta usar mesmo assim
+        var nm2=(d&&(d.professor||d.nome))||doc.id.replace(/_/g," ");
+        if(nm2 && !d.semestre)nomes[nm2]=true;
+      }
+    });
+    NOMES=Object.keys(nomes).sort(function(a,b){return a.localeCompare(b,"pt")});
+    return NOMES;
+  }).catch(function(e){
+    console.warn("Falha ao carregar nomes do Firestore:",e);
+    NOMES=[];
+    return NOMES;
+  });
+}
+
+function initSel(){
+  // Inicialmente lista vazia — será preenchida via Firestore após loadSemestres
+  NOMES=Object.keys(DB).sort(function(a,b){return a.localeCompare(b,"pt")});
+}
+function filtrarProf(){
+  var q=remAc($("psearch").value.trim());
+  var box=$("presults");
+  if(q.length<1){box.style.display="none";return}
+  // Força inclusão do DB local se Firestore ainda não carregou
+  if(NOMES.length===0){NOMES=Object.keys(DB).sort(function(a,b){return a.localeCompare(b,"pt")})}
+  if(NOMES.length===0){box.innerHTML='<div style="padding:10px;color:#E65100;font-size:13px;line-height:1.6">⏳ <b>Carregando lista de professores…</b><br><span style="color:#795548">Aguarde cerca de 30 segundos no primeiro acesso. É normal essa pequena demora — assim que a lista carregar, basta clicar sobre o seu nome.</span></div>';box.style.display="block";return}
+  var matches=NOMES.filter(function(n){return remAc(n).indexOf(q)>=0}).slice(0,10);
+  if(matches.length===0){box.innerHTML='<div style="padding:10px;color:#999;font-size:13px">Nenhum docente encontrado</div>';box.style.display="block";return}
+  box.innerHTML=matches.map(function(nm){
+    return '<div style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #f3f4f6" onmouseover="this.style.background=\'#f0fdf4\'" onmouseout="this.style.background=\'#fff\'" onclick="selecionarProf(\''+nm.replace(/'/g,"\\'")+'\')">'+ nm+'</div>';
+  }).join("");
+  box.style.display="block";
+}
+function selecionarProf(nm){
+  $("psearch").value=nm;$("psel").value=nm;$("presults").style.display="none";profSelecionado=false;onProf();
+}
+// Fechar resultados ao clicar fora
+document.addEventListener("click",function(e){if(!e.target.closest(".ps"))$("presults").style.display="none"});
+
+function carregarDadosProf(d,nm){
+  E=newE();E.n=nm;E.s=semestreAtual;
+  var realSlots=0;
+  DIAS.forEach(function(dia){(d.grade[dia]||[]).forEach(function(b){
+    var tp=b.tipo||b.tp||"aula";
+    if(tp==="aula"||tp==="aula_externa")realSlots++;
+  })});
+  E.au.t=realSlots||d.total_aulas;
+  E.au.disc=d.disciplinas.map(function(x){return{n:x.nome,t:x.turma,c:x.ch}});
+  E.au.t=d.total_aulas;
+  DIAS.forEach(function(dia){
+    E.grade[dia]=(d.grade[dia]||[]).map(function(b){return{i:b.inicio,f:b.fim,a:b.atividade,tp:b.tipo,t:b.turma||""}});
+  });
+  profSelecionado=true;
+  // Memória: salvar último prof+semestre por email do usuário logado
+  if(currentUser&&currentUser.email){
+    try{
+      var memKey="pitrit_last_"+currentUser.email.toLowerCase();
+      window.localStorage.setItem(memKey,JSON.stringify({prof:nm,semestre:semestreAtual,ts:Date.now()}));
+    }catch(e){}
+  }
+  applyE(E);
+  aba("id");
+  // Tentar restaurar rascunho salvo (que pode conter pesquisa, extensão, gestão, RIT, etc.)
+  restaurarRascunho(nm,semestreAtual).then(function(restaurou){
+    if(!restaurou){
+      // Sem rascunho — manter os dados base que já foram aplicados
+    }
+  });
+}
+
+// Restaura último prof+semestre escolhido pelo usuário (se houver memória)
+function restaurarUltimoRegistro(){
+  if(!currentUser||!currentUser.email)return false;
+  try{
+    var memKey="pitrit_last_"+currentUser.email.toLowerCase();
+    var raw=window.localStorage.getItem(memKey);
+    if(!raw)return false;
+    var mem=JSON.parse(raw);
+    if(!mem||!mem.prof)return false;
+    // Trocar semestre se necessário
+    var sel=document.getElementById("fs");
+    if(mem.semestre&&sel){
+      var hasOpt=Array.prototype.slice.call(sel.options).some(function(o){return o.value===mem.semestre});
+      if(hasOpt){sel.value=mem.semestre;semestreAtual=mem.semestre}
+    }
+    // Selecionar o prof e disparar onProf
+    var srch=document.getElementById("psearch");
+    var sl=document.getElementById("psel");
+    if(srch)srch.value=mem.prof;
+    if(sl)sl.value=mem.prof;
+    onProf();
+    return true;
+  }catch(e){return false}
+}
+
+function gradeTemAulas(data){
+  if(!data||!data.grade)return false;
+  var total=0;
+  DIAS.forEach(function(dia){total+=(data.grade[dia]||[]).length});
+  return total>0;
+}
+
+function desbloquearAbas(){
+  document.querySelectorAll(".tab").forEach(function(t){t.style.opacity="1";t.style.pointerEvents="auto"});
+}
+function bloquearAbas(){
+  document.querySelectorAll(".tab").forEach(function(t){
+    if(t.dataset.tab!=="id"){t.style.opacity="0.35";t.style.pointerEvents="none"}
+  });
+}
+
+function onProf(){
+  var nm=$("psel").value;if(!nm)return;
+  profSelecionado=false;
+  bloquearAbas();
+
+  var docId=semestreAtual+"_"+sanitizeDocId(nm);
+  db.collection("horarios").doc(docId).get().then(function(snap){
+    if(snap.exists&&gradeTemAulas(snap.data())){
+      // Firestore tem dados completos com grade — usar
+      carregarDadosProf(snap.data(),nm);
+      desbloquearAbas();
+    } else if(snap.exists){
+      // Firestore tem dados parciais (sem grade) — usar mesmo assim
+      carregarDadosProf(snap.data(),nm);
+      desbloquearAbas();
+    } else {
+      // Tenta docId legado (sem prefixo de semestre)
+      var docIdLegacy=sanitizeDocId(nm);
+      db.collection("horarios").doc(docIdLegacy).get().then(function(snap2){
+        if(snap2.exists){
+          carregarDadosProf(snap2.data(),nm);
+          desbloquearAbas();
+        } else {
+          profSelecionado=false;
+          desbloquearAbas();
+          alert("Sem dados de \""+nm+"\" para o semestre "+semestreAtual+".\n\nPeça ao administrador para importar e publicar os horários do semestre, ou abra um JSON salvo anteriormente pelo botão \"Abrir\".");
+          E=newE();E.n=nm;E.s=semestreAtual;applyE(E);
+        }
+      }).catch(function(){
+        desbloquearAbas();
+      });
+    }
+  }).catch(function(e){
+    desbloquearAbas();
+    alert("Erro de conexão. Verifique sua internet e tente novamente.");
+  });
+}
+
+function applyE(s){
+  E=JSON.parse(JSON.stringify(s));
+  // Ao carregar novo estado (troca de professor/semestre), reseta a confirmação do nome
+  nomeConfirmado=null;
+  // Backwards compat: garante que estruturas novas (Res. 171) existam ao carregar dados antigos
+  if(!E.dsg)E.dsg={prim:0,rev:0};
+  if(!E.matEad)E.matEad={video:0,livro:0};
+  if(!E.matFicEad)E.matFicEad={video:0,livro:0};
+  // Backwards compat (Res. 171): renumera itens antigos (3.x→7.x, 4.x→8.x, 5.x→10.x, 6.x→11.x)
+  // para que selects encontrem o tipo correspondente após a renumeração contínua
+  var migra={pesquisa:{old:"3.",new:"7."},extensao:{old:"4.",new:"8."},gestao:{old:"5.",new:"10."},comissoes:{old:"6.",new:"11."}};
+  Object.keys(migra).forEach(function(k){
+    var m=migra[k];
+    (E[k]||[]).forEach(function(it){
+      if(it.tipo&&it.tipo.indexOf(m.old)===0){
+        // Substitui apenas o prefixo numérico (ex: "3.1 Coord..." → "7.1 Coord...")
+        var resto=it.tipo.substring(m.old.length);
+        // Procura na nova lista um item que termine com o mesmo nome (depois do número)
+        var opts=LIM[k]||[];
+        var nomeAntigo=resto.replace(/^\d+\s*/,"").trim();
+        var match=opts.find(function(o){return o.n.replace(/^\d+\.\d+\s*/,"").trim()===nomeAntigo});
+        if(match)it.tipo=match.n;
+      }
+    });
+  });
+  // Backwards compat: ensure qty exists in pesquisa/extensao/gestao/comissoes
+  ["pesquisa","extensao","gestao","comissoes"].forEach(function(t){
+    (E[t]||[]).forEach(function(it){
+      if(it.qty===undefined&&it.ch){
+        var opts=LIM[t]||[];
+        var selOpt=opts.find(function(o){return o.n===it.tipo});
+        if(selOpt&&selOpt.p>0)it.qty=Math.round(it.ch/selOpt.p);
+        else it.qty=0;
+      }
+    });
+  });
+  $("fs").value=E.s;$("fn").value=E.n;$("fc").value=E.c;$("fd").value=E.d;$("fi").value=E.i;$("fv").value=E.v;$("fr").value=E.r;
+  $("psearch").value=E.n||"";$("psel").value=E.n||"";
+  $("at").value=E.au.t;$("ag").value=E.au.g;$("af").value=E.au.f;
+  $("ot").value=E.ori.t;$("oe").value=E.ori.e;$("oer").value=E.ori.er;$("om").value=E.ori.m;$("opb").value=E.ori.p;
+  $("elab").value=E.ex.l;$("eprj").value=E.ex.p;
+  // Res. 171 — design educacional EaD (2.3 e 2.4) e materiais didáticos EaD (regulares e FIC)
+  $("dp").value=E.dsg.prim;$("dr").value=E.dsg.rev;
+  $("medv").value=E.matEad.video;$("medl").value=E.matEad.livro;
+  $("mfv").value=E.matFicEad.video;$("mfl").value=E.matFicEad.livro;
+  $("re").value=E.rit.e||"";$("rp").value=E.rit.p||"";$("rx").value=E.rit.x||"";$("rgg").value=E.rit.g||"";$("rc").value=E.rit.c||"";
+  renderD();["pesquisa","extensao","gestao","comissoes"].forEach(renderI);calc();renderLeg();renderG();
+}
+
+function lerE(){
+  E.s=tv("fs");E.n=tv("fn");E.c=tv("fc");E.d=tv("fd");E.i=tv("fi");E.v=tv("fv");E.r=tv("fr");
+  E.au.t=nv("at");E.au.g=nv("ag");E.au.f=nv("af");
+  E.ori.t=nv("ot");E.ori.e=nv("oe");E.ori.er=nv("oer");E.ori.m=nv("om");E.ori.p=nv("opb");
+  E.ex.l=nv("elab");E.ex.p=nv("eprj");
+  // Res. 171 — design educacional EaD e materiais didáticos
+  if(!E.dsg)E.dsg={prim:0,rev:0};
+  if(!E.matEad)E.matEad={video:0,livro:0};
+  if(!E.matFicEad)E.matFicEad={video:0,livro:0};
+  E.dsg.prim=nv("dp");E.dsg.rev=nv("dr");
+  E.matEad.video=nv("medv");E.matEad.livro=nv("medl");
+  E.matFicEad.video=nv("mfv");E.matFicEad.livro=nv("mfl");
+  E.rit.e=tv("re");E.rit.p=tv("rp");E.rit.x=tv("rx");E.rit.g=tv("rgg");E.rit.c=tv("rc");
+}
+
+function doVal(){
+  lerE();var rg=REG[E.r],w=[];
+  var aT=E.au.t,aG=E.au.g,aFh=r1(E.au.f*0.05),aAll=r1(aT+aG+aFh);
+  if(aAll<rg.amin)w.push("Aulas ("+aAll+"h) abaixo do mínimo "+rg.amin+"h");
+  if(aAll>rg.amax)w.push("Aulas ("+aAll+"h) acima do máximo "+rg.amax+"h");
+  if(aT<6&&aAll>0)w.push("Técnicos/Lic. ("+aT+"h) abaixo de 6h");
+  // 2.1 Preparação e 2.2 Atendimento (automáticos)
+  var mP=Math.min(r1(aAll*0.8),rg.mpmax),mA=Math.min(r1(aAll*0.2),rg.mamax);
+  if(aAll>0&&mA<rg.mamin)mA=rg.mamin;
+  // 2.3 e 2.4 — Design Educacional EaD (Res. 171). Tetos da planilha: 400h (40h) / 200h (20h)
+  var dsgMax=E.r==="20"?200:400;
+  var dPrim=Math.min(r1(E.dsg.prim*0.05),dsgMax);
+  var dRev =Math.min(r1(E.dsg.rev *0.025),dsgMax);
+  if(E.dsg.prim>dsgMax)w.push("Design Educacional 2.3 ("+E.dsg.prim+"h) acima do máximo "+dsgMax+"h");
+  if(E.dsg.rev>dsgMax)w.push("Design Educacional 2.4 ("+E.dsg.rev+"h) acima do máximo "+dsgMax+"h");
+  var mT=r1(mP+mA+dPrim+dRev);
+  var ap=2;
+  var oT=r1(E.ori.t+E.ori.e+E.ori.er*2+E.ori.m*2+E.ori.p*10);var oMx=E.r==="20"?4:10;
+  if(oT>oMx)w.push("Orientação ("+oT+"h) acima de "+oMx+"h");
+  var eL=E.ex.l*8,eP=E.ex.p,eT=r1(eL+eP),eMx=E.r==="20"?4:10;
+  if(eT>eMx)w.push("Extracurricular ("+eT+"h) acima de "+eMx+"h");
+  // Item 6 da Res. 171 — Materiais didáticos para cursos REGULARES (EaD). Teto 10h (40h) / 4h (20h)
+  var mEadMx=E.r==="20"?4:10;
+  var medV=Math.min(E.matEad.video,E.r==="20"?2:5)*2;
+  var medL=Math.min(E.matEad.livro,1)*8;
+  var mEadT=r1(Math.min(medV+medL,mEadMx));
+  if(E.matEad.video>(E.r==="20"?2:5))w.push("Videoaulas regulares ("+E.matEad.video+") acima do máximo "+(E.r==="20"?2:5));
+  if(E.matEad.livro>1)w.push("Livros regulares ("+E.matEad.livro+") acima do máximo 1");
+  // Total da aba Ensino (todos os subtotais somados)
+  var enT=r1(aAll+mT+ap+oT+eT+mEadT);
+  function si(l){return r1((l||[]).reduce(function(s,x){return s+(Number(x.ch)||0)},0))}
+  var pT=si(E.pesquisa),xT=si(E.extensao),gT=si(E.gestao),cT=si(E.comissoes);
+  if(pT>rg.omax)w.push("Pesquisa ("+pT+"h) acima de "+rg.omax+"h");
+  if(xT>rg.omax)w.push("Extensão ("+xT+"h) acima de "+rg.omax+"h");
+  if(E.r==="20"&&gT>0)w.push("20h não permite gestão");
+  if(gT>rg.omax)w.push("Gestão ("+gT+"h) acima de "+rg.omax+"h");
+  if(cT>rg.omax)w.push("Comissões ("+cT+"h) acima de "+rg.omax+"h");
+  // Item 9 da Res. 171 — Materiais didáticos para cursos FIC (EaD). Teto 8h (40h) / 4h (20h)
+  var mFicMx=E.r==="20"?4:8;
+  var mfvV=Math.min(E.matFicEad.video,E.r==="20"?2:3)*2;
+  var mfvL=Math.min(E.matFicEad.livro,1)*8;
+  var mFicEadT=r1(Math.min(mfvV+mfvL,mFicMx));
+  if(E.matFicEad.video>(E.r==="20"?2:3))w.push("Videoaulas FIC ("+E.matFicEad.video+") acima do máximo "+(E.r==="20"?2:3));
+  if(E.matFicEad.livro>1)w.push("Livros FIC ("+E.matFicEad.livro+") acima do máximo 1");
+  var tot=r1(enT+pT+xT+gT+cT+mFicEadT),df=r1(rg.t-tot);
+  if(tot<rg.t)w.push("Total ("+tot+"h) abaixo do regime "+rg.t+"h (faltam "+df+"h)");
+  if(tot>rg.t)w.push("Total ("+tot+"h) excede o regime de "+rg.t+"h. Conforme Res. 39/2016 (Art. 25), serão contabilizadas apenas "+rg.t+"h relativas ao regime de trabalho.");
+  return{w:w,aT:aT,aG:aG,aFh:aFh,aAll:aAll,mP:mP,mA:mA,dPrim:dPrim,dRev:dRev,mT:mT,ap:ap,oT:oT,eT:eT,mEadT:mEadT,enT:enT,pT:pT,xT:xT,gT:gT,cT:cT,mFicEadT:mFicEadT,tot:tot,df:df};
+}
+
+function calc(){
+  var v=doVal(),rg=REG[E.r];
+  $("sr").textContent=rg.t+"h";
+  var se=$("st");se.textContent=v.tot+"h / "+rg.t+"h";
+  se.className="b "+(v.w.length===0?"b-ok":(v.tot>rg.t?"b-w":"b-e"));
+  $("afc").textContent=v.aFh+"h";
+  var ba=$("ab");ba.textContent=v.aAll+"h / "+rg.amin+"-"+rg.amax+"h";
+  ba.className="b "+(v.aAll>=rg.amin&&v.aAll<=rg.amax?"b-ok":"b-e");
+  $("mp").textContent=v.mP+"h";$("ma").textContent=v.mA+"h";$("mt").textContent=v.mT+"h";
+  $("ph").textContent="Auto: "+v.aAll+"x0.8 (max "+rg.mpmax+")";
+  $("ah").textContent="Auto: "+v.aAll+"x0.2 (min "+rg.mamin+"/max "+rg.mamax+")";
+  // Res. 171 — Design Educacional EaD: tetos diferentes por regime (400h em 40h / 200h em 20h)
+  var dsgMax=E.r==="20"?200:400;
+  if($("dpmh"))$("dpmh").textContent="Peso 0,05 · Max "+dsgMax+"h \u2192 "+v.dPrim+"h";
+  if($("drvh"))$("drvh").textContent="Peso 0,025 · Max "+dsgMax+"h \u2192 "+v.dRev+"h";
+  var oMx=E.r==="20"?4:10;$("os").textContent="Teto: "+oMx+"h";$("oo").textContent=v.oT+"h / "+oMx+"h";
+  var eMx=E.r==="20"?4:10;$("es").textContent="Teto: "+eMx+"h";$("ee").textContent=v.eT+"h / "+eMx+"h";
+  // Res. 171 — Card 6: Materiais didáticos REGULARES (EaD) — teto 10h (40h) / 4h (20h); videoaulas max 5/2
+  var mEadMx=E.r==="20"?4:10;
+  var medvMx=E.r==="20"?2:5;
+  if($("medas"))$("medas").textContent="Teto: "+mEadMx+"h · Res. 171/2024";
+  if($("medvh"))$("medvh").textContent="Peso 2 · Max "+medvMx;
+  if($("med"))$("med").textContent=v.mEadT+"h / "+mEadMx+"h";
+  $("te").textContent=v.enT+"h";
+  $("pss").textContent="Teto: "+rg.omax+"h";$("exs").textContent="Teto: "+rg.omax+"h";
+  $("gs2").textContent="Teto: "+rg.omax+"h";$("cs3").textContent="Teto: "+rg.omax+"h";
+  $("pt2").textContent=v.pT+"h / "+rg.omax+"h";$("xt2").textContent=v.xT+"h / "+rg.omax+"h";
+  $("gt3").textContent=v.gT+"h / "+rg.omax+"h";$("ct3").textContent=v.cT+"h / "+rg.omax+"h";
+  // Res. 171 — Card 9: Materiais didáticos FIC (EaD) — teto 8h (40h) / 4h (20h); videoaulas max 3/2
+  var mFicMx=E.r==="20"?4:8;
+  var mfvMx=E.r==="20"?2:3;
+  if($("mfes"))$("mfes").textContent="Teto: "+mFicMx+"h · Res. 171/2024";
+  if($("mfvh"))$("mfvh").textContent="Peso 2 · Max "+mfvMx;
+  if($("mfe"))$("mfe").textContent=v.mFicEadT+"h / "+mFicMx+"h";
+  $("cg").style.display=E.r==="20"?"none":"block";
+  var ep=$("ep");
+  if(v.w.length===0){ep.classList.add("hd")}
+  else{ep.classList.remove("hd");$("et").textContent="\u26a0 "+v.w.length+" aviso(s):";$("el").innerHTML=v.w.map(function(e){return"<li>"+e+"</li>"}).join("")}
+  if(!$("a-gr").classList.contains("hd"))renderG();
+  return v;
+}
+
+function onReg(){calc();if(tv("fr")==="20"){E.gestao=[];renderI("gestao")}}
+
+// DISCIPLINAS - use createElement to avoid quote issues
+function renderD(){
+  var l=$("dl");l.innerHTML="";
+  E.au.disc.forEach(function(d,i){
+    var div=document.createElement("div");div.className="ir";
+    var i1=document.createElement("input");i1.type="text";i1.value=d.n;i1.placeholder="Disciplina";
+    i1.onchange=function(){E.au.disc[i].n=this.value};
+    var i2=document.createElement("input");i2.type="text";i2.value=d.t;i2.placeholder="Turma";
+    i2.onchange=function(){E.au.disc[i].t=this.value};
+    var i3=document.createElement("input");i3.type="number";i3.value=d.c;i3.min="0";i3.step="1";
+    i3.onchange=function(){E.au.disc[i].c=Number(this.value)};
+    var bt=document.createElement("button");bt.textContent="\u00d7";bt.style.cssText="padding:5px 7px;color:#C62828;border:1px solid #FFCDD2;background:#fff;border-radius:8px;cursor:pointer;font-size:13px";
+    bt.onclick=function(){E.au.disc.splice(i,1);renderD()};
+    div.appendChild(i1);div.appendChild(i2);div.appendChild(i3);div.appendChild(bt);
+    l.appendChild(div);
+  });
+}
+function addD(){E.au.disc.push({n:"",t:"",c:0});renderD()}
+
+// ITENS - use createElement
+function renderI(tipo){
+  var lid=ELMAP[tipo];var l=$(lid);l.innerHTML="";
+  var opts=LIM[tipo]||[];
+  (E[tipo]||[]).forEach(function(it,idx){
+    var div=document.createElement("div");div.className="ir";
+    var sel=document.createElement("select");sel.style.cssText="flex:2;min-width:180px";
+    var o0=document.createElement("option");o0.value="";o0.textContent="Selecione...";sel.appendChild(o0);
+    opts.forEach(function(op){
+      var o=document.createElement("option");o.value=op.n;
+      o.textContent=op.n+" (Peso:"+op.p+" · Max:"+op.mx+")";
+      if(op.n===it.tipo)o.selected=true;sel.appendChild(o);
+    });
+    sel.onchange=function(){E[tipo][idx].tipo=this.value;E[tipo][idx].qty=0;E[tipo][idx].ch=0;renderI(tipo);calc()};
+    var inp=document.createElement("input");inp.type="text";inp.value=it.detalhe||"";inp.placeholder="Detalhe";inp.style.cssText="flex:1;min-width:100px";
+    inp.onchange=function(){E[tipo][idx].detalhe=this.value};
+    var selOpt=opts.find(function(o){return o.n===it.tipo});
+    var maxQty=selOpt?selOpt.mx:1;
+    var peso=selOpt?selOpt.p:1;
+    // Quantity input (step=1, same as ensino)
+    var qtyWrap=document.createElement("div");qtyWrap.style.cssText="display:flex;align-items:center;gap:4px";
+    var qtyLabel=document.createElement("span");qtyLabel.textContent="Qtd:";qtyLabel.style.cssText="font-size:11px;color:#666;white-space:nowrap";
+    var num=document.createElement("input");num.type="number";num.value=it.qty||0;num.min="0";num.max=String(maxQty);num.step="1";
+    num.style.cssText="width:60px";
+    num.onchange=function(){
+      var q=Math.min(Number(this.value)||0,maxQty);
+      E[tipo][idx].qty=q;
+      E[tipo][idx].ch=r1(q*peso);
+      renderI(tipo);calc();
+    };
+    // CH display (auto-calculated, read-only)
+    var chDisp=document.createElement("span");
+    chDisp.className="b b-i";chDisp.style.cssText="min-width:40px;text-align:center;font-size:12px";
+    chDisp.textContent=r1((it.qty||0)*peso)+"h";
+    qtyWrap.appendChild(qtyLabel);qtyWrap.appendChild(num);qtyWrap.appendChild(chDisp);
+    var bt=document.createElement("button");bt.textContent="\u00d7";bt.style.cssText="padding:5px 7px;color:#C62828;border:1px solid #FFCDD2;background:#fff;border-radius:8px;cursor:pointer;font-size:13px";
+    bt.onclick=function(){E[tipo].splice(idx,1);renderI(tipo);calc()};
+    div.appendChild(sel);div.appendChild(inp);div.appendChild(qtyWrap);div.appendChild(bt);
+    l.appendChild(div);
+  });
+}
+function addI(t){E[t].push({tipo:"",detalhe:"",ch:0,qty:0});renderI(t);calc()}
+
+// GRADE
+function renderLeg(){$("leg").innerHTML='<div class="li"><div class="ld" style="background:#1565C0"></div><span>Aula</span></div><div class="li"><div class="ld" style="background:#0277BD"></div><span>Aula (extra)</span></div><div class="li"><div class="ld" style="background:#43A047"></div><span>Atendimento a alunos</span></div><div class="li"><div class="ld" style="background:#7B1FA2"></div><span>Preparação</span></div><div class="li"><div class="ld" style="background:#00838F"></div><span>Apoio ao Ensino (reuniões)</span></div><div class="li"><div class="ld" style="background:#E65100"></div><span>Pesquisa</span></div><div class="li"><div class="ld" style="background:#AD1457"></div><span>Extensão</span></div><div class="li"><div class="ld" style="background:#4527A0"></div><span>Coordenação</span></div><div class="li"><div class="ld" style="background:#0D47A1"></div><span>Gestão</span></div><div class="li"><div class="ld" style="background:#00695C"></div><span>Orientação</span></div><div class="li"><div class="ld" style="background:#F9A825"></div><span>Capacitação</span></div><div class="li"><div class="ld" style="background:#78909C"></div><span>Outro</span></div>'}
+
+var CORES_GRADE={"aula":"#1565C0","aula_externa":"#0277BD","atendimento":"#43A047","prep":"#7B1FA2","apoio":"#00838F","pesquisa":"#E65100","extensao":"#AD1457","coord":"#4527A0","gestao":"#0D47A1","orient":"#00695C","capac":"#F9A825","outro":"#78909C"};
+
+function renderG(){
+  var tb=$("gtb");if(!tb)return;
+  var h="<thead><tr><th>Horário</th>",tot=0;
+  DIAS.forEach(function(d){h+="<th>"+d+"</th>"});h+="</tr></thead><tbody>";
+  SLOTS.forEach(function(s){
+    var parts=s.h.split("-"),si=parts[0],sf=parts[1];
+    h+="<tr><td class=\"sl\">"+s.l+"<br><span style=\"font-size:9px;font-weight:400\">"+s.h+"</span></td>";
+    DIAS.forEach(function(dia){
+      var bs=E.grade[dia]||[];
+      var b=bs.find(function(x){return x.i===si&&x.f===sf});
+      if(b){
+        tot++;
+        var tp=b.tp||"aula";
+        var cor=CORES_GRADE[tp]||"#78909C";
+        if(tp==="aula"||tp==="aula_externa"){
+          var ps=(b.a||"").split(" — ");
+          if(tp==="aula_externa"){
+            var label=b.a||"Aula";
+            if(label.length>20)label=label.substring(0,18)+"...";
+            h+="<td><div class=\"gc\" style=\"background:#0277BD;color:#fff;cursor:pointer;position:relative\" onclick=\"editSlot('"+dia+"','"+s.h+"')\" title=\""+esc(b.a)+" — ✏️ Clique para editar ou remover\"><span class=\"dn\">"+esc(label)+"</span><span style=\"position:absolute;top:1px;right:3px;font-size:8px\">✏️</span></div></td>";
+          }else{
+            // Aulas vindas do banco — agora editáveis também (Res. 171 Item 2)
+            h+="<td><div class=\"gc occ\" style=\"cursor:pointer;position:relative\" onclick=\"editSlot('"+dia+"','"+s.h+"')\" title=\""+esc(b.a)+" — ✏️ Clique para editar ou remover\"><span class=\"dn\">"+esc(ps[0])+"</span><span class=\"tn\">"+esc(ps[1]||b.t||"")+"</span><span style=\"position:absolute;top:1px;right:3px;font-size:8px;opacity:.7\">✏️</span></div></td>";
+          }
+        }else{
+          var label=b.a||tp;
+          if(label.length>18)label=label.substring(0,16)+"...";
+          h+="<td><div class=\"gc\" style=\"background:"+cor+";color:#fff;cursor:pointer\" onclick=\"editSlot('"+dia+"','"+s.h+"')\" title=\""+esc(b.a||tp)+" — Clique para editar ou remover\"><span class=\"dn\">"+esc(label)+"</span></div></td>";
+        }
+      }else{
+        h+="<td><div class=\"gc\" onclick=\"opA('"+dia+"','"+s.h+"')\"></div></td>";
+      }
+    });h+="</tr>";
+  });
+  h+="</tbody>";tb.innerHTML=h;
+  var gs=$("gsu");gs.innerHTML="Grade: <b>"+tot+" slots</b>";gs.className="gs "+(tot>0?"ok":"wn");
+}
+
+function rmSlot(dia,h){
+  // Mantido para compat. — agora redireciona para editSlot
+  editSlot(dia,h);
+}
+function editSlot(dia,h){
+  var p=h.split("-");
+  var bs=E.grade[dia]||[];
+  var b=bs.find(function(x){return x.i===p[0]&&x.f===p[1]});
+  if(!b)return;
+  var tp=b.tp||"aula";
+  var labelTipo={
+    "aula":"Aula",
+    "aula_externa":"Aula extra",
+    "atendimento":"Atendimento a alunos",
+    "preparacao":"Preparação",
+    "apoio":"Apoio ao ensino",
+    "pesquisa":"Pesquisa",
+    "extensao":"Extensão",
+    "gestao":"Gestão",
+    "outro":"Outra atividade"
+  }[tp]||"Atividade";
+
+  // Para aulas vindas do banco (tp==="aula"), oferece editar ou remover
+  // Para aulas extras (aula_externa), idem (já era assim)
+  // Para outras atividades, idem
+  var opcao=prompt(
+    labelTipo+" em "+dia+", "+h+":\n\n"+
+    "1 - Editar descrição\n"+
+    "2 - Remover\n\n"+
+    "Descrição atual: "+(b.a||labelTipo),
+    "1"
+  );
+  if(opcao===null)return;
+  opcao=opcao.trim();
+
+  if(opcao==="2"){
+    if(confirm("Remover \""+(b.a||labelTipo)+"\" de "+dia+" "+h+"?")){
+      E.grade[dia]=bs.filter(function(x){return!(x.i===p[0]&&x.f===p[1])});
+      renderG();syncGradeFirebase();
+    }
+    return;
+  }
+
+  // Edição: define prompt apropriado e prefill
+  var prefill=b.a||"";
+  var promptTxt="Edite a descrição da atividade:";
+  if(tp==="aula"){
+    promptTxt="Edite a descrição da aula\n(formato sugerido: \"Nome da disciplina — Turma\"):";
+  }else if(tp==="aula_externa"){
+    promptTxt="Edite a descrição da aula extra\n(ex: Mestrado PPGE, Curso FIC, Doutorado UFC):";
+    prefill=prefill.replace(/^Aula(?:\s*Externa)?\s*:\s*/,"");
+  }
+  var info=prompt(promptTxt,prefill);
+  if(info===null)return;
+  info=info.trim();
+  if(tp==="aula_externa"){
+    b.a=info?"Aula: "+info:"Aula";
+  }else{
+    b.a=info||labelTipo;
+  }
+  // Atualiza campo "t" (turma) para aulas: se houver " — " na descrição
+  if(tp==="aula"){
+    var partes=b.a.split(" — ");
+    if(partes.length>1)b.t=partes.slice(1).join(" — ");
+  }
+  renderG();syncGradeFirebase();
+}
+
+// === Compat: editExterna agora delega para editSlot ===
+function editExterna(dia,h){editSlot(dia,h)}
+function opA(d,h){
+  mSlot={d:d,h:h};$("mi").textContent=d+", "+h;
+  var GRADE_OPCOES=[
+    {txt:"Atendimento a alunos",tp:"atendimento",cor:"#43A047"},
+    {txt:"Aula",tp:"aula_externa",cor:"#0277BD"},
+    {txt:"Preparação + Planejamento",tp:"prep",cor:"#7B1FA2"},
+    {txt:"Apoio ao Ensino (reuniões)",tp:"apoio",cor:"#00838F"},
+    {txt:"Pesquisa aplicada",tp:"pesquisa",cor:"#E65100"},
+    {txt:"Extensão",tp:"extensao",cor:"#AD1457"},
+    {txt:"Coordenação",tp:"coord",cor:"#4527A0"},
+    {txt:"Gestão institucional",tp:"gestao",cor:"#1565C0"},
+    {txt:"Orientação TCC/Estágio",tp:"orient",cor:"#00695C"},
+    {txt:"Capacitação",tp:"capac",cor:"#F9A825"},
+  ];
+  var box=$("gradeModalBtns");
+  box.innerHTML=GRADE_OPCOES.map(function(op){
+    return '<button onclick="confGradeOp(\''+op.txt+'\',\''+op.tp+'\')" style="display:block;width:100%;padding:10px 14px;margin-bottom:5px;border:2px solid '+op.cor+';background:#fff;border-radius:8px;cursor:pointer;font-size:13px;text-align:left;color:#333;transition:background .15s" onmouseover="this.style.background=\''+op.cor+'1a\'" onmouseout="this.style.background=\'#fff\'"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:'+op.cor+';margin-right:8px;vertical-align:middle"></span>'+op.txt+'</button>';
+  }).join("")+'<button onclick="confGradeCustom()" style="display:block;width:100%;padding:10px 14px;border:2px dashed #999;background:#fff;border-radius:8px;cursor:pointer;font-size:13px;text-align:left;color:#666" onmouseover="this.style.background=\'#f5f5f5\'" onmouseout="this.style.background=\'#fff\'">✏️ Outro (digitar)</button>';
+  $("md").classList.remove("hd");
+}
+function fM(){$("md").classList.add("hd");mSlot=null}
+function confGradeOp(txt,tp){
+  if(!mSlot)return;var p=mSlot.h.split("-");
+  var descricao=txt;
+  if(tp==="aula_externa"){
+    var info=prompt("Descreva a aula (ex: Mestrado PPGE, Doutorado UFC, etc.):");
+    if(info===null){return}
+    descricao=info.trim()?("Aula: "+info.trim()):"Aula";
+  }
+  E.grade[mSlot.d].push({i:p[0],f:p[1],a:descricao,tp:tp,t:""});
+  fM();renderG();syncGradeFirebase();
+}
+function confGradeCustom(){
+  if(!mSlot)return;
+  var txt=prompt("Digite a atividade:");
+  if(!txt||!txt.trim())return;
+  var p=mSlot.h.split("-");
+  E.grade[mSlot.d].push({i:p[0],f:p[1],a:txt.trim(),tp:"outro",t:""});
+  fM();renderG();syncGradeFirebase();
+}
+function confA(){confGradeOp("Atendimento a alunos","atendimento")}
+function rmA(d,h){rmSlot(d,h)}
+
+// === SINCRONIZAÇÃO FIREBASE ===
+function sanitizeDocId(name){return name.replace(/[\/\.\#\$\[\]]/g,"_")}
+
+function syncGradeFirebase(){
+  if(!E.n)return;
+  var docId=semestreAtual+"_"+sanitizeDocId(E.n);
+  var data={
+    nome:E.n,
+    semestre:semestreAtual,
+    campus:E.c||"Canindé",
+    grade:E.grade,
+    disciplinas:E.au.disc.map(function(d){return{nome:d.n,turma:d.t,ch:d.c}}),
+    total_aulas:E.au.t,
+    atualizado:new Date().toISOString()
+  };
+  db.collection("horarios").doc(docId).set(data).then(function(){
+    console.log("Firebase sync OK:",E.n,"sem:",semestreAtual);
+    mostrarSyncStatus("ok");
+  }).catch(function(e){
+    console.error("Firebase sync erro:",e);
+    mostrarSyncStatus("erro");
+    alert("Erro ao sincronizar com Firebase:\n"+e.message+"\n\nVerifique as regras do Firestore e a conexão.");
+  });
+}
+
+function mostrarSyncStatus(tipo){
+  var el=document.getElementById("syncIndicator");
+  if(!el)return;
+  if(tipo==="ok"){el.textContent="☁️ Sincronizado";el.style.color="#4CAF50"}
+  else if(tipo==="enviando"){el.textContent="⏳ Enviando...";el.style.color="#FFA000"}
+  else{el.textContent="⚠️ Erro sync";el.style.color="#F44336"}
+  clearTimeout(el._t);el._t=setTimeout(function(){el.textContent=""},4000);
+}
+
+// Sincroniza ao selecionar professor
+var _origOnProf=onProf;
+onProf=function(){_origOnProf();syncGradeFirebase()}
+
+var profSelecionado=false;
+function aba(a){
+  if(!profSelecionado&&a!=="id"){alert("Selecione seu nome na aba Identificação primeiro.\n\nDigite seu nome no campo de busca e clique sobre ele na lista.");return}
+  document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active")});
+  document.querySelector('[data-tab="'+a+'"]').classList.add("active");
+  ["id","en","ou","gr","ri"].forEach(function(x){$("a-"+x).classList.toggle("hd",x!==a)});
+  if(a==="gr")renderG();
+}
+
+function salvar(){lerE();var d=JSON.stringify(E,null,2);var b=new Blob([d],{type:"application/json"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="PIT_"+(E.n||"docente").replace(/\s+/g,"_")+"_"+E.s+".json";a.click();URL.revokeObjectURL(u)}
+function abrirJ(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){try{applyE(JSON.parse(e.target.result));profSelecionado=true}catch(x){alert("Erro: "+x.message)}};r.readAsText(f)}
+
+// Mascara os 4 últimos dígitos do SIAPE para exibição em PDFs (ex: "1234567" -> "123****")
+function maskSiape(s){
+  if(!s)return"";
+  s=String(s).trim();
+  if(s.length<=4)return s.replace(/./g,"*");
+  return s.slice(0,s.length-4)+"****";
+}
+
+// === AUTO-SAVE NO FIRESTORE ===
+// Salva o estado E no Firestore automaticamente a cada alteração (debounced).
+// Coleção: "rascunhos", doc: "{email}_{semestre}_{profNome}"
+var _autoSaveTimer=null;
+var _userInteracted=false; // só salva depois que o usuário fez alguma mudança real
+function marcarInteracao(){_userInteracted=true}
+// marca interação em qualquer keypress/change na área principal
+document.addEventListener("input",function(e){
+  if(e.target&&(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA"||e.target.tagName==="SELECT")){
+    if(profSelecionado)_userInteracted=true;
+  }
+});
+function autoSave(){
+  // Só dispara se: usuário logado, professor selecionado, dados mínimos preenchidos, interação real
+  if(!currentUser||!currentUser.email)return;
+  if(!profSelecionado||!E.n||!E.s)return;
+  if(!_userInteracted)return;
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer=setTimeout(function(){
+    try{
+      lerE();
+    }catch(e){return}
+    var docId=currentUser.email.toLowerCase().replace(/[^a-z0-9@._-]/g,"")+"_"+E.s+"_"+sanitizeDocId(E.n);
+    db.collection("rascunhos").doc(docId).set({
+      email:currentUser.email.toLowerCase(),
+      prof:E.n,
+      semestre:E.s,
+      dados:JSON.stringify(E),
+      atualizado:new Date().toISOString()
+    }).then(function(){
+      var ind=document.getElementById("syncIndicator");
+      if(ind){ind.textContent="✅ Salvo";ind.style.color="#4CAF50";setTimeout(function(){if(ind.textContent==="✅ Salvo")ind.textContent=""},2000)}
+    }).catch(function(err){
+      // Silenciar — não tem como o professor resolver erro de regras do Firestore
+      // Só mostra no console para debug.
+      console.warn("Auto-save: não foi possível salvar rascunho remoto.",err&&err.message?err.message:err);
+      var ind=document.getElementById("syncIndicator");
+      if(ind){ind.textContent="";ind.style.color=""}
+    });
+  },2000); // 2s debounce — espera o prof parar de digitar
+}
+
+// Restaurar rascunho salvo do Firestore (chamado após selecionar professor)
+function restaurarRascunho(profNome,semestre){
+  if(!currentUser||!currentUser.email)return Promise.resolve(false);
+  var docId=currentUser.email.toLowerCase().replace(/[^a-z0-9@._-]/g,"")+"_"+semestre+"_"+sanitizeDocId(profNome);
+  return db.collection("rascunhos").doc(docId).get().then(function(snap){
+    if(!snap.exists)return false;
+    var d=snap.data();
+    if(!d.dados)return false;
+    try{
+      var saved=JSON.parse(d.dados);
+      // Verificar se o rascunho é mais recente que os dados do Firestore
+      // (o professor pode ter feito alterações depois da última importação)
+      applyE(saved);
+      profSelecionado=true;
+      var ind=document.getElementById("syncIndicator");
+      if(ind){ind.textContent="📄 Rascunho restaurado";ind.style.color="#1565C0";setTimeout(function(){ind.textContent=""},3000)}
+      return true;
+    }catch(x){return false}
+  }).catch(function(){return false});
+}
+
+// Hook: chamar autoSave quando o formulário é alterado
+// Intercepta calc() para disparar autoSave junto
+var _originalCalc=calc;
+calc=function(){_originalCalc.apply(this,arguments);autoSave();};
+
+
+function gerarRIT(){
+  var v=doVal();
+  var disc=E.au.disc.map(function(d){return"\u2022 "+d.n+" \u2014 "+d.t+" ("+d.c+"h)"}).join("\n");
+  // Texto base do Ensino
+  var ensinoTxt="Disciplinas ministradas no semestre "+E.s+":\n"+(disc||"\u2014")+"\n\nPreparação/Planejamento: "+v.mP+"h semanais\nAtendimento a estudantes: "+v.mA+"h semanais";
+  // Res. 171 — adiciona blocos extras quando há horas declaradas
+  var extras=[];
+  if(v.dPrim>0)extras.push("Elaboração de matriz de design educacional EaD (1ª oferta): "+v.dPrim+"h semanais ("+E.dsg.prim+"h totais)");
+  if(v.dRev>0)extras.push("Revisão de matriz de design educacional EaD: "+v.dRev+"h semanais ("+E.dsg.rev+"h totais)");
+  if(v.mEadT>0){
+    var lst=[];
+    if(E.matEad.video>0)lst.push(E.matEad.video+" videoaula(s) regulares");
+    if(E.matEad.livro>0)lst.push(E.matEad.livro+" livro(s) regulares");
+    extras.push("Produção de materiais didáticos para cursos regulares (EaD): "+v.mEadT+"h semanais — "+lst.join(", "));
+  }
+  if(extras.length)ensinoTxt+="\n\n"+extras.join("\n");
+  $("re").value=ensinoTxt;
+  $("rp").value=E.pesquisa.length>0?E.pesquisa.map(function(x){return"\u2022 "+x.tipo+" \u2014 "+x.detalhe+" ("+x.ch+"h/sem)"}).join("\n")+"\n\nRelatar andamento...":"Nenhuma atividade de pesquisa prevista no PIT.";
+  // Extensão + Materiais FIC EaD
+  var extTxt=E.extensao.length>0?E.extensao.map(function(x){return"\u2022 "+x.tipo+" \u2014 "+x.detalhe+" ("+x.ch+"h/sem)"}).join("\n"):"";
+  if(v.mFicEadT>0){
+    var lstFic=[];
+    if(E.matFicEad.video>0)lstFic.push(E.matFicEad.video+" videoaula(s) FIC");
+    if(E.matFicEad.livro>0)lstFic.push(E.matFicEad.livro+" livro(s) FIC");
+    var matFicLine="\u2022 Produção de materiais didáticos para cursos FIC (EaD) \u2014 "+lstFic.join(", ")+" ("+v.mFicEadT+"h/sem)";
+    extTxt=extTxt?(extTxt+"\n"+matFicLine):matFicLine;
+  }
+  $("rx").value=extTxt?(extTxt+"\n\nRelatar andamento..."):"Nenhuma atividade de extensão prevista no PIT.";
+  var gi=E.gestao.concat(E.comissoes);
+  $("rgg").value=gi.length>0?gi.map(function(x){return"\u2022 "+x.tipo+" \u2014 "+x.detalhe+" ("+x.ch+"h/sem)"}).join("\n")+"\n\nAtividades desenvolvidas...":"Nenhuma atividade de gestão/comissão prevista no PIT.";
+  $("rc").value="\u2014";var av=$("rit-aviso");if(av)av.style.display="none";
+  preencherTabelaRIT();
+  aba("ri");
+}
+
+// Confirma com o usuário (i) se o nome está completo e (ii) lembra da assinatura digital
+// obrigatória antes de anexar ao SEI. Só pergunta UMA vez por nome nesta sessão.
+// Abre modal de orientação de assinatura + abre assinador.iti.br em nova aba
+function abrirModalAssinatura(){
+  window.open('https://assinador.iti.br','_blank');
+  var m=document.getElementById('modalAssinatura');
+  if(m){m.style.display='flex';}
+}
+
+function confirmarNomeCompleto(){
+  var nomeAtual=(E.n||"").trim();
+  if(nomeConfirmado===nomeAtual)return true; // já confirmado nesta sessão
+  var msg=
+    "ANTES DE GERAR O PDF — confira 2 itens:\n\n"+
+    "1) NOME COMPLETO\n"+
+    "   O nome carregado do banco nem sempre é o completo.\n"+
+    "   Nome atual: "+(nomeAtual||"(vazio)")+"\n"+
+    "   Se estiver incompleto, cancele e edite na aba Identificação.\n\n"+
+    "2) ASSINATURA DIGITAL (obrigatória antes de anexar ao SEI)\n"+
+    "   Após baixar o PDF, assine eletronicamente em:\n"+
+    "   https://assinador.iti.br\n"+
+    "   (login com sua conta gov.br · selo \"Avançada\")\n"+
+    "   Anexe ao SEI somente o PDF JÁ ASSINADO.\n\n"+
+    "Deseja continuar e gerar o PDF?";
+  if(confirm(msg)){
+    nomeConfirmado=nomeAtual;
+    return true;
+  }
+  return false;
+}
+
+// === EXPERIMENTAL: Gera HTML compatível com editor do SEI ===
+// Estratégia: HTML mínimo (tabelas simples, sem CSS inline complexo, sem cores),
+// para sobreviver à limpeza do CKEditor do SEI quando colado.
+// Modal de escolha de método: (A) copiar/colar no SEI ou (B) baixar PDF e assinar no gov.br
+function escolherMetodo(tipo){
+  lerE();
+  if(!E.i||!E.i.trim()){alert("Preencha o campo SIAPE na aba Identificação antes de gerar.");return}
+  var nomeDoc=tipo==="PIT"?"Plano Individual de Trabalho":"Relatório Individual de Trabalho";
+  var m=document.getElementById("modalMetodo");
+  if(!m){
+    m=document.createElement("div");
+    m.id="modalMetodo";
+    m.style.cssText="display:flex;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:20px";
+    document.body.appendChild(m);
+  }
+  m.innerHTML='<div style="background:#fff;border-radius:14px;max-width:600px;width:100%;padding:26px;box-shadow:0 8px 32px rgba(0,0,0,.25)">'+
+    '<div style="font-size:17px;font-weight:700;color:#1B5E20;margin-bottom:4px">Gerar '+tipo+'</div>'+
+    '<div style="font-size:12.5px;color:#666;margin-bottom:20px">'+esc(nomeDoc)+' — escolha como deseja prosseguir. Ambos os caminhos resultam em um documento assinado para anexar ao SEI.</div>'+
+    '<div style="display:flex;flex-direction:column;gap:12px">'+
+      // Opção A — copiar/colar no SEI
+      '<button onclick="document.getElementById(\'modalMetodo\').style.display=\'none\';copiarParaSEI(\''+tipo+'\')" '+
+      'style="text-align:left;padding:16px 18px;background:#F1F8E9;border:2px solid #AED581;border-radius:10px;cursor:pointer;transition:.15s" '+
+      'onmouseover="this.style.borderColor=\'#7CB342\'" onmouseout="this.style.borderColor=\'#AED581\'">'+
+      '<div style="font-size:14px;font-weight:700;color:#33691E;margin-bottom:4px">📋 Opção 1 — Copiar e colar no SEI <span style="font-size:10px;background:#33691E;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px;vertical-align:middle">RECOMENDADO</span></div>'+
+      '<div style="font-size:12px;color:#558B2F;line-height:1.5">Cola o conteúdo direto em um documento do SEI e assina lá mesmo, sem sair do sistema. Não precisa baixar arquivo nem usar outro site.</div>'+
+      '</button>'+
+      // Opção B — baixar PDF e assinar gov.br
+      '<button onclick="document.getElementById(\'modalMetodo\').style.display=\'none\';'+(tipo==="PIT"?"pdfPIT()":"pdfRIT()")+'" '+
+      'style="text-align:left;padding:16px 18px;background:#E3F2FD;border:2px solid #90CAF9;border-radius:10px;cursor:pointer;transition:.15s" '+
+      'onmouseover="this.style.borderColor=\'#42A5F5\'" onmouseout="this.style.borderColor=\'#90CAF9\'">'+
+      '<div style="font-size:14px;font-weight:700;color:#1565C0;margin-bottom:4px">📄 Opção 2 — Baixar PDF e assinar pelo gov.br</div>'+
+      '<div style="font-size:12px;color:#1976D2;line-height:1.5">Baixa o PDF formatado e abre o assinador oficial gov.br (assinador.iti.br). Depois você anexa o PDF assinado ao SEI como documento externo.</div>'+
+      '</button>'+
+    '</div>'+
+    '<div style="text-align:right;margin-top:18px">'+
+    '<button onclick="document.getElementById(\'modalMetodo\').style.display=\'none\'" style="padding:9px 18px;background:#f5f5f5;color:#333;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>'+
+    '</div></div>';
+  m.style.display="flex";
+}
+
+function copiarParaSEI(tipo){
+  try{
+  lerE();
+  if(!E.i||!E.i.trim()){alert("Preencha o campo SIAPE na aba Identificação antes de gerar.");return}
+  if(!confirmarNomeCompleto())return;
+  var v=doVal();var rg=REG[E.r];
+  var vc={efetivo:"Efetivo",substituto:"Substituto",temporario:"Temporário"}[E.v]||"";
+  var hoje=new Date();var meses=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  var dataStr="Canindé, "+hoje.getDate()+" de "+meses[hoje.getMonth()]+" de "+hoje.getFullYear()+".";
+  var titulo=tipo==="PIT"?"PLANO INDIVIDUAL DE TRABALHO (PIT)":"RELATÓRIO INDIVIDUAL DE TRABALHO (RIT)";
+
+  // Constrói HTML enxuto — só tags básicas, sem CSS complexo
+  var h="";
+  h+="<p style=\"text-align:center\"><strong>INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO CEARÁ</strong><br/>";
+  h+="Campus "+esc(E.c||"")+"</p>";
+  h+="<p style=\"text-align:center\"><strong>"+titulo+"</strong></p>";
+  h+="<p style=\"text-align:center\"><em>(Distribuição conforme Resolução CONSUP/IFCE nº 171/2024)</em></p>";
+  h+="<p><strong>Semestre:</strong> "+esc(E.s||"")+"</p>";
+  h+="<p>";
+  h+="<strong>Nome:</strong> "+esc(E.n||"")+"<br/>";
+  h+="<strong>Campus:</strong> "+esc(E.c||"")+"<br/>";
+  h+="<strong>Departamento:</strong> "+esc(E.d||"")+"<br/>";
+  h+="<strong>SIAPE:</strong> "+esc(maskSiape(E.i))+"<br/>";
+  h+="<strong>Vínculo:</strong> "+esc(vc)+"<br/>";
+  h+="<strong>Regime:</strong> "+esc(REG[E.r].l);
+  h+="</p>";
+
+  // Tabela única com as atividades — bordas básicas para o SEI
+  h+="<table border=\"1\" cellpadding=\"4\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%\">";
+  function linha(rotulo,valor,negrito){
+    var tag=negrito?"th":"td";
+    h+="<tr><"+tag+" style=\"text-align:left\">"+esc(rotulo)+"</"+tag+">";
+    h+="<"+tag+" style=\"text-align:right;width:80px\">"+esc(valor)+"</"+tag+"></tr>";
+  }
+  linha("1. AULAS","",true);
+  linha("1.1 Técnicos/Licenciaturas",v.aT+"h");
+  linha("1.2 Graduação/Pós",v.aG+"h");
+  linha("1.3 FIC",v.aFh+"h");
+  linha("2. MANUTENÇÃO",v.mT+"h",true);
+  linha("2.1 Preparação",v.mP+"h");
+  linha("2.2 Atendimento",v.mA+"h");
+  if(E.dsg.prim>0)linha("2.3 Design educacional EaD (1ª oferta)",v.dPrim+"h");
+  if(E.dsg.rev>0)linha("2.4 Revisão de matriz de design educacional EaD",v.dRev+"h");
+  linha("3. APOIO (fixo)","2h",true);
+  linha("4. ORIENTAÇÃO",v.oT+"h",true);
+  linha("5. EXTRACURRICULAR",v.eT+"h",true);
+  if(v.mEadT>0){
+    linha("6. MATERIAIS DIDÁTICOS - REGULARES (EaD)",v.mEadT+"h",true);
+    if(E.matEad.video>0)linha("6.1 Videoaulas",E.matEad.video+" un.");
+    if(E.matEad.livro>0)linha("6.2 Livros",E.matEad.livro+" un.");
+  }
+  linha("7. PESQUISA APLICADA",v.pT+"h",true);
+  E.pesquisa.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+  linha("8. EXTENSÃO",v.xT+"h",true);
+  E.extensao.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+  if(v.mFicEadT>0){
+    linha("9. MATERIAIS DIDÁTICOS - FIC (EaD)",v.mFicEadT+"h",true);
+    if(E.matFicEad.video>0)linha("9.1 Videoaulas FIC",E.matFicEad.video+" un.");
+    if(E.matFicEad.livro>0)linha("9.2 Livros FIC",E.matFicEad.livro+" un.");
+  }
+  if(E.r!=="20"){
+    linha("10. GESTÃO",v.gT+"h",true);
+    E.gestao.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+  }
+  linha("11. COMISSÕES/REPRESENTAÇÃO",v.cT+"h",true);
+  E.comissoes.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+  linha("TOTAL",v.tot+"h",true);
+  h+="</table>";
+
+  if(v.tot>rg.t){
+    h+="<p><em><strong>Obs.:</strong> A CH total ("+v.tot+"h) excede o regime de "+rg.t+"h. Conforme Res. 39/2016 (Art. 25), serão contabilizadas apenas "+rg.t+"h relativas ao regime de trabalho.</em></p>";
+  }
+
+  // Conteúdo específico do RIT — texto descritivo das atividades
+  if(tipo==="RIT" && E.rit){
+    var bloco=function(titulo,txt){if(txt&&txt.trim()){h+="<p><strong>"+esc(titulo)+":</strong></p><p>"+esc(txt).replace(/\n/g,"<br/>")+"</p>"}};
+    bloco("Atividades de Ensino executadas",E.rit.e);
+    bloco("Atividades de Pesquisa executadas",E.rit.p);
+    bloco("Atividades de Extensão executadas",E.rit.x);
+    bloco("Atividades de Gestão executadas",E.rit.g);
+    bloco("Capacitação",E.rit.c);
+  }
+
+  h+="<p style=\"text-align:center\">"+esc(dataStr)+"</p>";
+  h+="<p style=\"text-align:center\">_____________________________________<br/>"+esc(E.n||"Professor(a)")+"</p>";
+
+  // Abre modal com pré-visualização e botão de copiar
+  abrirModalCopiarSEI(tipo,h);
+  }catch(err){alert("Erro ao gerar HTML para SEI:\n"+err.message);console.error(err)}
+}
+
+function abrirModalCopiarSEI(tipo,htmlConteudo){
+  var m=document.getElementById("modalCopiarSEI");
+  if(!m){
+    m=document.createElement("div");
+    m.id="modalCopiarSEI";
+    m.style.cssText="display:flex;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:20px";
+    m.innerHTML='<div id="boxCopiarSEI" style="background:#fff;border-radius:14px;max-width:760px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.25);overflow:hidden">'+
+      '<div style="padding:18px 22px;background:linear-gradient(135deg,#fff7ed,#fed7aa);border-bottom:1px solid #fed7aa">'+
+      '<div style="font-size:11px;font-weight:700;color:#9a3412;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">⚠️ Função experimental</div>'+
+      '<div id="tituloModalSEI" style="font-size:16px;font-weight:700;color:#7c2d12">Copiar para Documento Interno do SEI</div>'+
+      '<div style="font-size:12px;color:#9a3412;margin-top:6px;line-height:1.5">Esta alternativa permite assinar pelo SEI sem precisar do assinador.iti.br. <b>Algumas formatações podem ser perdidas</b> ao colar — confira o resultado.</div>'+
+      '</div>'+
+      '<div style="padding:16px 22px;flex:1;overflow-y:auto;background:#fafafa">'+
+      '<div style="background:#fff;border:1px solid #ddd;padding:18px;border-radius:8px;font-family:Arial,sans-serif;font-size:13px;max-height:340px;overflow-y:auto" id="preCopiaSEI"></div>'+
+      '</div>'+
+      '<div style="padding:14px 22px;background:#f9fafb;border-top:1px solid #eee">'+
+      '<div style="background:#F3F7FF;border-radius:8px;padding:12px 14px;margin-bottom:12px">'+
+      '<div style="font-size:11px;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📋 Como usar — escolha um caminho</div>'+
+      '<div style="font-size:12px;color:#333;line-height:1.6;margin-bottom:6px"><b>Primeiro:</b> clique em <b>"📋 Copiar conteúdo"</b> abaixo. Depois, no SEI:</div>'+
+      '<div style="background:#fff;border-radius:6px;padding:10px 12px;margin-bottom:8px">'+
+      '<div style="font-size:11.5px;font-weight:700;color:#2E7D32;margin-bottom:4px">✅ Caminho recomendado — modelo VAZIO</div>'+
+      '<ol style="margin:0;padding-left:18px;font-size:11.5px;color:#444;line-height:1.6">'+
+      '<li>Incluir Documento &rarr; busque por <b>"PLANO DE TRABALHO"</b> ou <b>"RELATÓRIO INDIVIDUAL DE TRABALHO"</b>. Escolha a opção cujo nome <b>não tenha sigla entre parênteses</b> — essa vem em branco, pronta para receber o conteúdo.</li>'+
+      '<li>Clique no ícone <b>laranja de folha com caneta</b> (Editar Conteúdo) na barra do documento.</li>'+
+      '<li>No editor vazio, cole com <b>Ctrl+V</b> (ou Cmd+V).</li>'+
+      '<li>Salve e clique em <b>Assinar Documento</b>.</li>'+
+      '</ol></div>'+
+      '<div style="background:#fff;border-radius:6px;padding:10px 12px">'+
+      '<div style="font-size:11.5px;font-weight:700;color:#9a3412;margin-bottom:4px">📄 Alternativa — modelo com tabelas "(PIT)" / "(RIT)"</div>'+
+      '<div style="font-size:11px;color:#777;line-height:1.5">Se escolher o modelo que já vem com as tabelas (com "(PIT)" ou "(RIT)" no nome), será necessário <b>selecionar tudo (Ctrl+A) e apagar</b> o conteúdo existente antes de colar — caso contrário ficam duas tabelas. Por isso, recomendamos o modelo vazio acima.</div>'+
+      '</div></div>'+
+      '<div style="background:#FFF8E1;border-left:3px solid #F9A825;border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:11.5px;color:#5D4037;line-height:1.5">'+
+      '💡 <b>Você pode editar livremente</b> o conteúdo dentro do SEI. Se faltar algum item específico do IFCE, basta inseri-lo manualmente no editor antes de assinar.'+
+      '</div>'+
+      '<div style="display:flex;gap:10px">'+
+      '<button onclick="copiarTextoSEI()" id="btnCopiarSEI" style="flex:1;padding:11px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📋 Copiar conteúdo</button>'+
+      '<button onclick="document.getElementById(\'modalCopiarSEI\').style.display=\'none\'" style="padding:11px 20px;background:#f5f5f5;color:#333;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Fechar</button>'+
+      '</div></div></div>';
+    document.body.appendChild(m);
+  }
+  document.getElementById("tituloModalSEI").textContent="Copiar "+tipo+" para Documento Interno do SEI";
+  document.getElementById("preCopiaSEI").innerHTML=htmlConteudo;
+  document.getElementById("btnCopiarSEI").textContent="📋 Copiar conteúdo";
+  document.getElementById("btnCopiarSEI").style.background="#1565C0";
+  m.style.display="flex";
+}
+
+function copiarTextoSEI(){
+  var div=document.getElementById("preCopiaSEI");
+  if(!div)return;
+  // Seleciona o conteúdo e usa Selection API + execCommand para copiar HTML formatado
+  // (clipboard.write com text/html funciona em navegadores modernos)
+  var btn=document.getElementById("btnCopiarSEI");
+  try{
+    if(navigator.clipboard&&window.ClipboardItem){
+      var html=div.innerHTML;
+      var texto=div.innerText;
+      var item=new ClipboardItem({
+        "text/html":new Blob([html],{type:"text/html"}),
+        "text/plain":new Blob([texto],{type:"text/plain"})
+      });
+      navigator.clipboard.write([item]).then(function(){
+        btn.textContent="✓ Copiado! Cole no SEI com Ctrl+V";
+        btn.style.background="#2E7D32";
+      }).catch(function(){
+        // Fallback se Clipboard API falhar
+        fallbackCopiarSelecao(div,btn);
+      });
+    }else{
+      fallbackCopiarSelecao(div,btn);
+    }
+  }catch(e){
+    fallbackCopiarSelecao(div,btn);
+  }
+}
+
+function fallbackCopiarSelecao(div,btn){
+  // Fallback: seleciona o conteúdo do div e usa execCommand('copy')
+  try{
+    var range=document.createRange();range.selectNodeContents(div);
+    var sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+    var ok=document.execCommand("copy");
+    sel.removeAllRanges();
+    if(ok){btn.textContent="✓ Copiado! Cole no SEI com Ctrl+V";btn.style.background="#2E7D32"}
+    else{btn.textContent="⚠ Selecione o texto acima manualmente e copie com Ctrl+C";btn.style.background="#E65100"}
+  }catch(e){
+    btn.textContent="⚠ Selecione o texto acima manualmente e copie com Ctrl+C";btn.style.background="#E65100";
+  }
+}
+
+function pdfPIT(){
+  try{
+  lerE();
+  if(!E.i||!E.i.trim()){alert("Preencha o campo SIAPE na aba Identificação antes de gerar o PDF.");return}
+  if(!confirmarNomeCompleto())return;
+  var v=doVal();var rg=REG[E.r];var j=window.jspdf;if(!j){alert("Aguarde o carregamento do jsPDF");return}
+  var doc=new j.jsPDF({unit:"mm",format:"a4"});
+  var W=210,H=297,m=15,y=m;
+  function cp(n){if(y+(n||15)>H-m){doc.addPage();y=m}}
+  function tr(c,w,o){o=o||{};cp(8);var h=o.h||7,x=m;doc.setFont("helvetica",o.b?"bold":"normal");doc.setFontSize(o.s||9);
+  if(o.f){doc.setFillColor(o.f[0],o.f[1],o.f[2]);doc.rect(m,y,W-2*m,h,"F")}
+  if(o.tc){doc.setTextColor(o.tc[0],o.tc[1],o.tc[2])}else{doc.setTextColor(0)}
+  c.forEach(function(t,i){doc.setDrawColor(180);doc.rect(x,y,w[i],h);var ls=doc.splitTextToSize(String(t||""),w[i]-2);doc.text(ls[0]||"",x+1,y+h*0.65);x+=w[i]});y+=h;doc.setTextColor(0)}
+
+  doc.setFillColor(27,94,32);doc.rect(0,0,W,18,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(11);
+  doc.text("INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO CEARÁ",W/2,8,{align:"center"});
+  doc.setFontSize(9);doc.setFont("helvetica","normal");doc.text("Campus "+(E.c||""),W/2,14,{align:"center"});
+  doc.setTextColor(0);y=24;
+  doc.setFont("helvetica","bold");doc.setFontSize(12);doc.text("PLANO INDIVIDUAL DE TRABALHO (PIT)",W/2,y,{align:"center"});y+=8;
+  doc.setFillColor(232,245,233);doc.rect(m,y,W-2*m,6,"F");doc.setFontSize(10);doc.text("Semestre: "+(E.s||""),m+2,y+4);y+=8;
+  doc.setFont("helvetica","normal");doc.setFontSize(9);
+  var vc={efetivo:"Efetivo",substituto:"Substituto",temporario:"Temporário"}[E.v]||"";
+  ["Nome: "+E.n,"Campus: "+E.c,"Departamento: "+E.d,"SIAPE: "+maskSiape(E.i),"Vínculo: "+vc,"Regime: "+REG[E.r].l].forEach(function(t){doc.text(t,m,y);y+=4.5});y+=2;
+  doc.setDrawColor(180);doc.line(m,y,W-m,y);y+=4;
+  tr(["1. AULAS","C.H"],[150,30],{b:1,f:[200,230,201]});
+  tr(["1.1 Técnicos/Licenciaturas",v.aT+"h"],[150,30]);tr(["1.2 Graduação/Pós",v.aG+"h"],[150,30]);tr(["1.3 FIC",v.aFh+"h"],[150,30]);
+  tr(["2. MANUTENÇÃO",v.mT+"h"],[150,30],{b:1,f:[200,230,201]});
+  tr(["2.1 Preparação",v.mP+"h"],[150,30]);tr(["2.2 Atendimento",v.mA+"h"],[150,30]);
+  if(E.dsg.prim>0)tr(["2.3 Design educacional EaD (1ª oferta)",v.dPrim+"h"],[150,30]);
+  if(E.dsg.rev>0)tr(["2.4 Revisão de matriz de design educacional EaD",v.dRev+"h"],[150,30]);
+  tr(["3. APOIO (fixo)","2h"],[150,30],{b:1,f:[200,230,201]});
+  tr(["4. ORIENTAÇÃO",v.oT+"h"],[150,30],{b:1,f:[200,230,201]});
+  tr(["5. EXTRACURRICULAR",v.eT+"h"],[150,30],{b:1,f:[200,230,201]});
+  if(v.mEadT>0){
+    tr(["6. MATERIAIS DIDÁTICOS - REGULARES (EaD)",v.mEadT+"h"],[150,30],{b:1,f:[200,230,201]});
+    if(E.matEad.video>0)tr(["6.1 Videoaulas (videoteca regulares)",E.matEad.video+" un."],[150,30]);
+    if(E.matEad.livro>0)tr(["6.2 Livros (regulares)",E.matEad.livro+" un."],[150,30]);
+  }
+  tr(["7. PESQUISA APLICADA",v.pT+"h"],[150,30],{b:1,f:[200,230,201]});E.pesquisa.forEach(function(x){tr([x.tipo+" - "+x.detalhe,x.ch+"h"],[150,30])});
+  tr(["8. EXTENSÃO",v.xT+"h"],[150,30],{b:1,f:[200,230,201]});E.extensao.forEach(function(x){tr([x.tipo+" - "+x.detalhe,x.ch+"h"],[150,30])});
+  if(v.mFicEadT>0){
+    tr(["9. MATERIAIS DIDÁTICOS - FIC (EaD)",v.mFicEadT+"h"],[150,30],{b:1,f:[200,230,201]});
+    if(E.matFicEad.video>0)tr(["9.1 Videoaulas (videoteca FIC)",E.matFicEad.video+" un."],[150,30]);
+    if(E.matFicEad.livro>0)tr(["9.2 Livros (FIC)",E.matFicEad.livro+" un."],[150,30]);
+  }
+  if(E.r!=="20"){tr(["10. GESTÃO",v.gT+"h"],[150,30],{b:1,f:[200,230,201]});E.gestao.forEach(function(x){tr([x.tipo+" - "+x.detalhe,x.ch+"h"],[150,30])})}
+  tr(["11. COMISSÕES/REPRESENTAÇÃO",v.cT+"h"],[150,30],{b:1,f:[200,230,201]});E.comissoes.forEach(function(x){tr([x.tipo+" - "+x.detalhe,x.ch+"h"],[150,30])});
+  tr(["TOTAL",v.tot+"h"],[150,30],{b:1,f:[27,94,32],tc:[255,255,255]});
+  // Aviso de excesso se total > regime
+  if(v.tot>rg.t){cp(20);y+=6;doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(198,40,40);
+    var avisoTxt="Obs.: A CH total ("+v.tot+"h) excede o regime de "+rg.t+"h. Conforme Res. 39/2016 (Art. 25), serão contabilizadas apenas "+rg.t+"h relativas ao regime de trabalho, de acordo com o quadro de distribuição.";
+    var avisoLines=doc.splitTextToSize(avisoTxt,W-2*m);
+    avisoLines.forEach(function(l){cp(5);doc.text(l,m,y);y+=4});
+    doc.setTextColor(0)}
+  cp(40);y+=12;doc.setFont("helvetica","normal");doc.setFontSize(9);
+  // Data automática
+  var hoje=new Date();var meses=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  var dataStr="Canindé, "+hoje.getDate()+" de "+meses[hoje.getMonth()]+" de "+hoje.getFullYear()+".";
+  doc.text(dataStr,W/2,y,{align:"center"});y+=16;
+  var cW=(W-2*m)/3;doc.line(m+5,y,m+cW-5,y);doc.line(m+cW+5,y,m+2*cW-5,y);doc.line(m+2*cW+5,y,W-m-5,y);y+=5;
+  doc.setFontSize(8);doc.text("Professor(a)",m+cW/2,y,{align:"center"});doc.text("Coord. de Curso",m+cW+cW/2,y,{align:"center"});doc.text("Direção de Ensino",m+2*cW+cW/2,y,{align:"center"});
+  // Bloco final: orientações para anexar ao SEI
+  cp(45);y+=14;doc.setFont("helvetica","italic");doc.setFontSize(7.5);doc.setTextColor(80);
+  doc.text("Anexe este documento ao seu Processo SEI, com:",W/2,y,{align:"center"});y+=4;
+  doc.setFont("helvetica","normal");
+  doc.text("(a) documentos comprobatórios das atividades declaradas (atos de designação, portarias, projetos cadastrados, etc.);",W/2,y,{align:"center"});y+=3.5;
+  doc.text("(b) despacho de encaminhamento assinado, dirigido à coordenação do curso onde você possui maior carga horária.",W/2,y,{align:"center"});y+=4.5;
+  doc.setFont("helvetica","bold");doc.setTextColor(21,101,192);
+  doc.text("No SEI, anexe este PDF como \"Documento Externo\" (tipo: PIT).",W/2,y,{align:"center"});y+=5;
+  doc.setFont("helvetica","bold");doc.setTextColor(198,40,40);
+  doc.text("IMPORTANTE: este PDF deve ser assinado eletronicamente antes de anexar ao SEI.",W/2,y,{align:"center"});y+=4;
+  doc.setFont("helvetica","normal");doc.setTextColor(80);
+  doc.text("Use o assinador oficial Gov.br: https://assinador.iti.br  (login com conta gov.br)",W/2,y,{align:"center"});y+=5;
+  doc.setTextColor(21,101,192);doc.setFont("helvetica","bold");
+  doc.text("Passo a passo: https://codepen.io/Nadia-Ferreira/full/pvEVzmw",W/2,y,{align:"center"});
+  doc.setTextColor(0);doc.setFont("helvetica","normal");
+  doc.save("PIT_"+(E.n||"docente").replace(/\s+/g,"_")+"_"+E.s+".pdf");
+  abrirModalAssinatura();
+  }catch(err){alert("Erro ao gerar PDF do PIT:\n"+err.message+"\n\nLinha: "+err.stack);console.error(err)}
+}
+
+function pdfRIT(){
+  try{
+  lerE();
+  if(!E.i||!E.i.trim()){alert("Preencha o campo SIAPE na aba Identificação antes de gerar o PDF.");return}
+  if(!confirmarNomeCompleto())return;
+  var v=doVal();var rg=REG[E.r];var j=window.jspdf;if(!j){alert("Aguarde o carregamento do jsPDF");return}
+  var doc=new j.jsPDF({unit:"mm",format:"a4"});var W=210,H=297,m=15,y=m;
+  function cp(n){if(y+(n||15)>H-m){doc.addPage();y=m}}
+  doc.setFillColor(27,94,32);doc.rect(0,0,W,18,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(11);
+  doc.text("INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO CEARÁ",W/2,8,{align:"center"});
+  doc.setFontSize(9);doc.setFont("helvetica","normal");doc.text("Campus "+(E.c||""),W/2,14,{align:"center"});
+  doc.setTextColor(0);y=24;doc.setFont("helvetica","bold");doc.setFontSize(12);
+  doc.text("RELATÓRIO INDIVIDUAL DE TRABALHO (RIT)",W/2,y,{align:"center"});y+=8;
+  doc.setFillColor(232,245,233);doc.rect(m,y,W-2*m,6,"F");doc.setFontSize(10);doc.text("Semestre: "+(E.s||""),m+2,y+4);y+=10;
+  doc.setFont("helvetica","normal");doc.setFontSize(9);
+  ["Nome: "+E.n,"Campus: "+E.c,"Departamento: "+E.d,"SIAPE: "+maskSiape(E.i),"Regime: "+REG[E.r].l].forEach(function(t){doc.text(t,m,y);y+=4.5});y+=3;
+  function sec(tit,txt){cp(30);doc.setFillColor(200,230,201);doc.rect(m,y,W-2*m,6,"F");doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text(tit,W/2,y+4,{align:"center"});y+=8;
+  doc.setFont("helvetica","normal");doc.setFontSize(9);doc.splitTextToSize(txt||"",W-2*m).forEach(function(w){cp(5);doc.text(w,m,y);y+=4.5});y+=3}
+  sec("ENSINO",E.rit.e);sec("PESQUISA",E.rit.p);sec("EXTENSÃO",E.rit.x);sec("GESTÃO",E.rit.g);sec("CAPACITAÇÃO",E.rit.c);
+  
+
+  // Tabela de Distribuição de Carga Horária no Semestre
+  var hasRitGrade=Object.keys(ritGradeData).length>0;
+  if(hasRitGrade){
+    doc.addPage();y=m;
+    doc.setFont("helvetica","bold");doc.setFontSize(11);
+    doc.text("DISTRIBUIÇÃO DE CARGA HORÁRIA NO SEMESTRE",W/2,y,{align:"center"});y+=8;
+    var cW1=22,cWd=(W-2*m-cW1)/DIAS.length;
+    doc.setFillColor(27,94,32);doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(7);
+    doc.rect(m,y,cW1,6,"F");doc.text("Horário",m+1,y+4);
+    DIAS.forEach(function(d,i){doc.rect(m+cW1+i*cWd,y,cWd,6,"F");doc.text(d,m+cW1+i*cWd+1,y+4)});
+    doc.setDrawColor(180);y+=6;doc.setTextColor(0);doc.setFont("helvetica","normal");doc.setFontSize(6);
+    var CORES_PDF={"aula":[21,101,192],"aula_externa":[2,119,189],"atendimento":[67,160,71],"prep":[123,31,162],"apoio":[0,131,143],"pesquisa":[230,81,0],"extensao":[173,20,87],"coord":[69,39,160],"gestao":[13,71,161],"orient":[0,105,92],"capac":[249,168,37],"comissoes":[85,139,47],"manual":[120,144,156],"outro":[120,144,156]};
+    SLOTS.forEach(function(s){
+      // Calcular altura máxima da linha baseado no conteúdo
+      var maxLines=1;
+      DIAS.forEach(function(dia){
+        var key=dia+"_"+s.id;var cell=ritGradeData[key];
+        if(cell){var tx=doc.splitTextToSize(cell.text||"",cWd-2);if(tx.length>maxLines)maxLines=tx.length}
+      });
+      var rowH=Math.max(5,maxLines*3+1.5);
+      cp(rowH);
+      doc.rect(m,y,cW1,rowH);doc.text(s.l,m+1,y+3.5);
+      DIAS.forEach(function(dia,i){
+        var key=dia+"_"+s.id;var cell=ritGradeData[key];
+        doc.rect(m+cW1+i*cWd,y,cWd,rowH);
+        if(cell){
+          var cor=CORES_PDF[cell.tipo]||CORES_PDF["outro"];
+          var useBg=(cell.tipo!=="manual"&&cell.tipo!=="outro");
+          if(useBg||cell.tipo==="aula"||cell.tipo==="atendimento"||cell.tipo==="prep"||cell.tipo==="apoio"||cell.tipo==="pesquisa"||cell.tipo==="extensao"||cell.tipo==="coord"||cell.tipo==="gestao"||cell.tipo==="orient"||cell.tipo==="capac"||cell.tipo==="comissoes"||cell.tipo==="aula_externa"){
+            doc.setFillColor(cor[0],cor[1],cor[2]);doc.rect(m+cW1+i*cWd+0.3,y+0.3,cWd-0.6,rowH-0.6,"F");
+            doc.setTextColor(cell.tipo==="capac"?0:255);
+          }else{doc.setTextColor(0)}
+          var tx=doc.splitTextToSize(cell.text||"",cWd-2);
+          tx.forEach(function(line,li){doc.text(line,m+cW1+i*cWd+1,y+3+li*3)});
+          doc.setTextColor(0);
+        }
+      });y+=rowH;
+    });
+  }
+
+  // Aviso de excesso se total > regime
+  if(v.tot>rg.t){cp(20);y+=6;doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(198,40,40);
+    var avisoTxt="Obs.: A CH total ("+v.tot+"h) excede o regime de "+rg.t+"h. Conforme Res. 39/2016 (Art. 25), serão contabilizadas apenas "+rg.t+"h relativas ao regime de trabalho, de acordo com o quadro de distribuição preenchido.";
+    var avisoLines=doc.splitTextToSize(avisoTxt,W-2*m);
+    avisoLines.forEach(function(l){cp(5);doc.text(l,m,y);y+=4});
+    doc.setTextColor(0)}
+
+  cp(40);y+=12;doc.setFontSize(9);doc.setFont("helvetica","normal");
+  var hoje=new Date();var meses=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  var dataStr="Canindé, "+hoje.getDate()+" de "+meses[hoje.getMonth()]+" de "+hoje.getFullYear()+".";
+  doc.text(dataStr,W/2,y,{align:"center"});y+=16;
+  var cW=(W-2*m)/3;doc.line(m+5,y,m+cW-5,y);doc.line(m+cW+5,y,m+2*cW-5,y);doc.line(m+2*cW+5,y,W-m-5,y);y+=5;
+  doc.setFontSize(8);doc.text("Professor(a)",m+cW/2,y,{align:"center"});doc.text("Coord. de Curso",m+cW+cW/2,y,{align:"center"});doc.text("Direção de Ensino",m+2*cW+cW/2,y,{align:"center"});
+  // Bloco final: orientações para anexar ao SEI
+  cp(45);y+=14;doc.setFont("helvetica","italic");doc.setFontSize(7.5);doc.setTextColor(80);
+  doc.text("Anexe este documento ao seu Processo SEI, com:",W/2,y,{align:"center"});y+=4;
+  doc.setFont("helvetica","normal");
+  doc.text("(a) documentos comprobatórios das atividades realizadas no semestre (atos, portarias, relatórios, certificados, etc.);",W/2,y,{align:"center"});y+=3.5;
+  doc.text("(b) despacho de encaminhamento assinado, dirigido à coordenação do curso onde você possui maior carga horária.",W/2,y,{align:"center"});y+=4.5;
+  doc.setFont("helvetica","bold");doc.setTextColor(21,101,192);
+  doc.text("No SEI, anexe este PDF como \"Documento Externo\" (tipo: RIT).",W/2,y,{align:"center"});y+=5;
+  doc.setFont("helvetica","bold");doc.setTextColor(198,40,40);
+  doc.text("IMPORTANTE: este PDF deve ser assinado eletronicamente antes de anexar ao SEI.",W/2,y,{align:"center"});y+=4;
+  doc.setFont("helvetica","normal");doc.setTextColor(80);
+  doc.text("Use o assinador oficial Gov.br: https://assinador.iti.br  (login com conta gov.br)",W/2,y,{align:"center"});y+=5;
+  doc.setTextColor(21,101,192);doc.setFont("helvetica","bold");
+  doc.text("Passo a passo: https://codepen.io/Nadia-Ferreira/full/pvEVzmw",W/2,y,{align:"center"});
+  doc.setTextColor(0);doc.setFont("helvetica","normal");
+  doc.save("RIT_"+(E.n||"docente").replace(/\s+/g,"_")+"_"+E.s+".pdf");
+  abrirModalAssinatura();
+  }catch(err){alert("Erro ao gerar PDF do RIT:\n"+err.message);console.error(err)}
+}
+
+// Publica o horário do professor atual no Firestore (coleção "horarios")
+// Usado pelo professor logado para enviar seus dados de aulas + atendimento
+// para a consulta pública dos alunos.
+function publicarTodos(){
+  if(!profSelecionado||!E.n){
+    alert("Selecione um docente antes de publicar.");
+    return;
+  }
+  lerE();
+  var btn=document.querySelector('[onclick*="publicarTodos"]');
+  if(btn){btn.disabled=true;btn.textContent="⏳ Publicando...";}
+  mostrarSyncStatus("enviando");
+
+  var docId=semestreAtual+"_"+sanitizeDocId(E.n);
+  var ref=db.collection("horarios").doc(docId);
+  var data={
+    nome:E.n,
+    professor:E.n,
+    semestre:semestreAtual,
+    campus:E.c||"Canindé",
+    departamento:E.d||"",
+    grade:E.grade,
+    disciplinas:(E.au&&E.au.disc?E.au.disc.map(function(dd){return{nome:dd.n,turma:dd.t,ch:dd.c}}):[]),
+    total_aulas:(E.au&&E.au.t)||0,
+    atualizado:new Date().toISOString(),
+    publicadoPor:(currentUser&&currentUser.email)||""
+  };
+  ref.set(data,{merge:true}).then(function(){
+    if(btn){btn.disabled=false;btn.innerHTML="&#128225; Publicar";}
+    mostrarSyncStatus("ok");
+    alert("✅ Horário publicado com sucesso!\n\nSeus alunos já podem consultar em "+(window.location.origin||"")+"/consulta-teste.html");
+  }).catch(function(e){
+    if(btn){btn.disabled=false;btn.innerHTML="&#128225; Publicar";}
+    mostrarSyncStatus("erro");
+    alert("Erro ao publicar: "+(e&&e.message?e.message:e));
+  });
+}
+
+// RIT Grade Table - stores editable cells
+var ritGradeData = {};
+
+function preencherTabelaRIT(){
+  ritGradeData = {};
+  SLOTS.forEach(function(s){
+    var parts=s.h.split("-"),si=parts[0],sf=parts[1];
+    DIAS.forEach(function(dia){
+      var key=dia+"_"+s.id;
+      var bs=E.grade[dia]||[];
+      var b=bs.find(function(x){return x.i===si&&x.f===sf});
+      if(b){
+        ritGradeData[key]={text:b.tp==="atendimento"?"Atendimento a alunos":(b.a||""),tipo:b.tp};
+      }
+    });
+  });
+  renderRitGrade();
+}
+
+function renderRitGrade(){
+  var tb=$("rit-grade-tbl");
+  var h="<thead><tr><th>Horário</th>";
+  DIAS.forEach(function(d){h+="<th>"+d+"</th>"});h+="</tr></thead><tbody>";
+  SLOTS.forEach(function(s){
+    var parts=s.h.split("-");
+    h+="<tr><td class=\"sl\">"+s.l+"<br><span style=\"font-size:9px;font-weight:400\">"+s.h+"</span></td>";
+    DIAS.forEach(function(dia){
+      var key=dia+"_"+s.id;
+      var cell=ritGradeData[key];
+      if(cell){
+        var CORES_RIT={"aula":"#1565C0","aula_externa":"#0277BD","atendimento":"#43A047","prep":"#7B1FA2","apoio":"#00838F","pesquisa":"#E65100","extensao":"#AD1457","coord":"#4527A0","gestao":"#0D47A1","orient":"#00695C","capac":"#F9A825","comissoes":"#558B2F","manual":"#78909C","outro":"#78909C"};
+        var bgColor=CORES_RIT[cell.tipo]||"#78909C";
+        var txtColor=(cell.tipo==="capac")?"#333":"#fff";
+        var shortTxt=cell.text.length>25?cell.text.substring(0,22)+"...":cell.text;
+        h+="<td><div class=\"gc\" style=\"background:"+bgColor+";color:"+txtColor+";padding:2px 3px;font-size:9px;line-height:1.2;cursor:pointer;min-height:28px\" onclick=\"editRitCell('"+key+"')\" title=\""+esc(cell.text)+"\">";
+        h+="<span class=\"dn\">"+esc(shortTxt)+"</span></div></td>";
+      }else{
+        h+="<td><div class=\"gc\" onclick=\"editRitCell('"+key+"')\" style=\"min-height:28px\"></div></td>";
+      }
+    });h+="</tr>";
+  });
+  h+="</tbody>";tb.innerHTML=h;
+}
+
+var ritModalKey=null;
+var RIT_OPCOES=[
+  {txt:"Aula",tipo:"aula",cor:"#1565C0"},
+  {txt:"Atendimento a alunos",tipo:"atendimento",cor:"#43A047"},
+  {txt:"Preparação + Planejamento",tipo:"prep",cor:"#7B1FA2"},
+  {txt:"Apoio ao Ensino (reuniões)",tipo:"apoio",cor:"#00838F"},
+  {txt:"Pesquisa aplicada",tipo:"pesquisa",cor:"#E65100"},
+  {txt:"Extensão",tipo:"extensao",cor:"#AD1457"},
+  {txt:"Coordenação",tipo:"coord",cor:"#4527A0"},
+  {txt:"Gestão institucional",tipo:"gestao",cor:"#0D47A1"},
+  {txt:"Comissões/Representação",tipo:"comissoes",cor:"#558B2F"},
+  {txt:"Orientação TCC/Estágio",tipo:"orient",cor:"#00695C"},
+  {txt:"Capacitação",tipo:"capac",cor:"#F9A825"},
+];
+
+// Retorna apenas as opções RIT_OPCOES que estão presentes no PIT do
+// professor logado. As regras: "Aula" só se há aulas; opções de
+// "manutenção do ensino" (Atendimento, Preparação, Apoio, Capacitação)
+// são sempre disponíveis; demais opções aparecem apenas se o professor
+// declarou alguma atividade da categoria correspondente no PIT.
+function ritOpcoesDisponiveis(){
+  var opcoes=[];
+  RIT_OPCOES.forEach(function(op){
+    var disp=true;
+    switch(op.txt){
+      case "Aula":
+        disp=(E.au && (E.au.t>0 || (E.au.disc && E.au.disc.length>0)));
+        break;
+      case "Atendimento a alunos":
+      case "Preparação + Planejamento":
+      case "Apoio ao Ensino (reuniões)":
+      case "Capacitação":
+        // Manutenção do ensino é automática e capacitação é livre — sempre disponíveis
+        disp=true;
+        break;
+      case "Pesquisa aplicada":
+        disp=(E.pesquisa && E.pesquisa.length>0);
+        break;
+      case "Extensão":
+        disp=(E.extensao && E.extensao.length>0);
+        break;
+      case "Coordenação":
+      case "Gestão institucional":
+        disp=(E.gestao && E.gestao.length>0);
+        break;
+      case "Comissões/Representação":
+        disp=(E.comissoes && E.comissoes.length>0);
+        break;
+      case "Orientação TCC/Estágio":
+        disp=(E.ori && (E.ori.t>0 || E.ori.e>0 || E.ori.er>0 || E.ori.m>0 || E.ori.p>0));
+        break;
+      default:
+        disp=true;
+    }
+    if(disp) opcoes.push(op);
+  });
+  return opcoes;
+}
+
+function editRitCell(key){
+  ritModalKey=key;
+  var box=$("ritModalBtns");
+  var disponiveis=ritOpcoesDisponiveis();
+  var html="";
+  if(disponiveis.length===0){
+    html='<p style="color:#666;font-size:13px;text-align:center;margin-bottom:12px">Nenhuma atividade do PIT preenchida.<br>Use a opção "Outro (digitar)" abaixo.</p>';
+  } else {
+    html=disponiveis.map(function(op){
+      return '<button onclick="ritModalSelect(\''+op.txt+'\')" style="display:block;width:100%;padding:10px 14px;margin-bottom:6px;border:2px solid '+op.cor+';background:#fff;border-radius:8px;cursor:pointer;font-size:13px;text-align:left;color:#333;transition:background .15s" onmouseover="this.style.background=\''+op.cor+'1a\'" onmouseout="this.style.background=\'#fff\'"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:'+op.cor+';margin-right:8px;vertical-align:middle"></span>'+op.txt+'</button>';
+    }).join("");
+  }
+  box.innerHTML=html+'<button onclick="ritModalCustom()" style="display:block;width:100%;padding:10px 14px;margin-bottom:6px;border:2px dashed #999;background:#fff;border-radius:8px;cursor:pointer;font-size:13px;text-align:left;color:#666" onmouseover="this.style.background=\'#f5f5f5\'" onmouseout="this.style.background=\'#fff\'">✏️ Outro (digitar)</button>';
+  var m=$("ritModal");m.style.display="flex";
+}
+
+function ritModalSelect(txt){
+  if(!ritModalKey)return;
+  if(txt==="__limpar__"){delete ritGradeData[ritModalKey]}
+  else{
+    var op=RIT_OPCOES.find(function(o){return o.txt===txt});
+    ritGradeData[ritModalKey]={text:txt,tipo:op?op.tipo:"manual"};
+  }
+  fecharRitModal();renderRitGrade();
+}
+
+function ritModalCustom(){
+  var txt=prompt("Digite a atividade:");
+  if(!txt||!txt.trim())return;
+  ritGradeData[ritModalKey]={text:txt.trim(),tipo:"manual"};
+  fecharRitModal();renderRitGrade();
+}
+
+function fecharRitModal(){$("ritModal").style.display="none";ritModalKey=null}
+
+// === AUTENTICAÇÃO GOOGLE COM RESTRIÇÃO @ifce.edu.br ===
+// Aceita apenas emails @ifce.edu.br. Se o usuário tentar entrar com outro
+// email, é desconectado imediatamente após o login (porque o Google não
+// permite restringir 100% no client — só "sugerir" via hd).
+
+function loginGoogle(){
+  var elErr=$("loginError");
+  var elInfo=$("loginInfo");
+  elErr.style.display="none";
+  elInfo.style.display="none";
+
+  var provider=new firebase.auth.GoogleAuthProvider();
+  // Sugere ao Google mostrar apenas contas do domínio ifce.edu.br
+  // (não bloqueia 100%, mas filtra a maioria dos casos)
+  provider.setCustomParameters({hd:"ifce.edu.br"});
+
+  auth.signInWithPopup(provider).then(function(result){
+    var email=(result.user&&result.user.email)||"";
+    if(!isIfceEmail(email)){
+      // Email fora do domínio permitido — desloga e mostra erro
+      auth.signOut().then(function(){
+        elErr.style.display="block";
+        elErr.innerHTML="❌ Acesso negado.<br>O email <b>"+email+"</b> não pertence ao domínio <b>@ifce.edu.br</b>.<br>Use sua conta Google institucional.";
+      });
+      return;
+    }
+    // Login OK — onAuthStateChanged trata o resto
+  }).catch(function(error){
+    elErr.style.display="block";
+    if(error.code==="auth/popup-closed-by-user"){elErr.textContent="Login cancelado."}
+    else if(error.code==="auth/popup-blocked"){elErr.textContent="O navegador bloqueou o popup. Permita popups para este site e tente novamente."}
+    else if(error.code==="auth/cancelled-popup-request"){elErr.textContent="Login cancelado."}
+    else if(error.code==="auth/unauthorized-domain"){elErr.textContent="Domínio não autorizado. Adicione este domínio em Authentication → Settings → Authorized domains no Firebase Console."}
+    else if(error.code==="auth/operation-not-allowed"){elErr.textContent="Login Google não está habilitado no Firebase Console."}
+    else if(error.code==="auth/internal-error"){elErr.innerHTML="Erro interno do Firebase. Verifique:<br>1. Provedor Google está habilitado em Authentication → Sign-in method<br>2. O domínio onde o sistema está hospedado está em Authorized domains<br>3. Tente limpar o cache do navegador (Ctrl+Shift+R)"}
+    else if(error.code==="auth/network-request-failed"){elErr.textContent="Falha de rede. Verifique sua conexão e tente novamente."}
+    else{elErr.textContent="Erro: "+(error.code||"")+" "+(error.message||"")}
+  });
+}
+
+function logoutUser(){
+  auth.signOut().then(function(){
+    currentUser=null;
+    $("loginScreen").style.display="flex";
+    $("appMain").style.display="none";
+  });
+}
+
+function isIfceEmail(email){return email&&email.toLowerCase().endsWith("@ifce.edu.br")}
+
+// Listener de estado de autenticação
+var authReady=false;
+auth.onAuthStateChanged(function(user){
+  function doInit(){
+    if(user){
+      // Garantia adicional: se por algum motivo o usuário tem sessão ativa
+      // com email fora de @ifce.edu.br (sessão antiga, etc.), deslogar.
+      if(!isIfceEmail(user.email)){
+        auth.signOut().then(function(){
+          var elErr=$("loginError");
+          if(elErr){
+            elErr.style.display="block";
+            elErr.innerHTML="❌ Sua sessão usava o email <b>"+(user.email||"desconhecido")+"</b>, que não pertence ao domínio @ifce.edu.br. Faça login novamente com sua conta institucional.";
+          }
+        });
+        return;
+      }
+      currentUser={uid:user.uid,email:user.email,nome:user.displayName,foto:user.photoURL};
+      $("loginScreen").style.display="none";
+      $("appMain").style.display="block";
+      $("userInfo").textContent=user.displayName||user.email;
+      $("btnLogout").style.display="inline-block";
+      
+      initSel();renderLeg();calc();
+      loadSemestres().then(function(){
+        // Após semestres carregarem, tentar restaurar último registro
+        restaurarUltimoRegistro();
+      });
+      
+      // Buscar SIAPE do Firestore se existir
+      if(isIfceEmail(user.email)){
+        db.collection("usuarios").doc(user.uid).get().then(function(doc){
+          if(doc.exists&&doc.data().siape){$("fi").value=doc.data().siape}
+        }).catch(function(){});
+      }
+      
+      // Professor deve selecionar manualmente no campo de busca
+    }else{
+      currentUser=null;
+      $("loginScreen").style.display="flex";
+      $("appMain").style.display="none";
+    }
+  }
+  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",doInit)}else{doInit()}
+});
+
+// Salvar SIAPE no Firestore ao alterar
+var siapeTimer=null;
+if($("fi"))$("fi").addEventListener("input",function(){
+  clearTimeout(siapeTimer);
+  var val=this.value;
+  siapeTimer=setTimeout(function(){
+    if(currentUser&&val){
+      db.collection("usuarios").doc(currentUser.uid).set({siape:val,email:currentUser.email,nome:currentUser.nome},{merge:true}).catch(function(){});
+    }
+  },2000);
+});
+
+// Proteger publicação — exige login
+var _origSyncGrade=syncGradeFirebase;
+syncGradeFirebase=function(){
+  if(!currentUser){console.warn("Sync bloqueado: sem login");return}
+  _origSyncGrade();
+  if(E.n){
+    var docId=semestreAtual+"_"+sanitizeDocId(E.n);
+    db.collection("horarios").doc(docId).update({editadoPor:currentUser.email,editadoEm:new Date().toISOString(),semestre:semestreAtual}).catch(function(e){console.log("update extra erro:",e)});
+  }
+}
+
+var _origPublicarTodos=publicarTodos;
+publicarTodos=function(){
+  if(!currentUser){alert("Faça login para publicar.");return}
+  _origPublicarTodos();
+}
+
+window.addEventListener("DOMContentLoaded",function(){
+  // Se não tem auth (ex: erro de conexão), inicializar mesmo assim
+  setTimeout(function(){
+    if(!currentUser&&$("appMain").style.display==="none"){
+      // Não está logado — a tela de login já está visível
+    }
+  },3000);
+});
+
+</script>
+</div><!-- fim appMain -->
+<div id="ritModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+<div style="background:#fff;border-radius:12px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+<div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:14px">Selecione a atividade para este horário:</div>
+<div id="ritModalBtns"></div>
+<div style="margin-top:12px;display:flex;gap:8px">
+<button onclick="ritModalSelect('__limpar__')" style="flex:1;padding:10px;border:1px solid #FFCDD2;background:#FFF8E1;border-radius:8px;cursor:pointer;font-size:13px;color:#C62828">Limpar</button>
+<button onclick="fecharRitModal()" style="flex:1;padding:10px;border:1px solid #ccc;background:#f5f5f5;border-radius:8px;cursor:pointer;font-size:13px">Cancelar</button>
+</div>
+</div>
+</div>
+
+<!-- ===== MODAL ASSINATURA GOV.BR ===== -->
+<div id="modalAssinatura" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;max-width:480px;width:92%;padding:28px 28px 22px;box-shadow:0 8px 32px rgba(0,0,0,.25);position:relative">
+    <!-- Cabeçalho -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <div style="width:44px;height:44px;border-radius:50%;background:#2E7D32;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px">✅</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#2E7D32">PDF baixado com sucesso!</div>
+        <div style="font-size:12px;color:#666;margin-top:2px">O arquivo está salvo na pasta <b>Downloads</b> do seu computador</div>
+      </div>
+    </div>
+    <!-- Linha divisória + intro próximo passo -->
+    <div style="border-top:1px solid #eee;margin:16px 0 14px"></div>
+    <div style="font-size:13px;color:#333;margin-bottom:12px;line-height:1.5">
+      <b>Próximo passo:</b> assinar digitalmente antes de anexar ao SEI. Recomendamos o assinador oficial do governo (<b>gratuito</b>).
+    </div>
+    <!-- Passos -->
+    <div style="background:#F3F7FF;border-radius:10px;padding:16px 18px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#1565C0;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px">📋 Como assinar pelo gov.br</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="min-width:22px;height:22px;border-radius:50%;background:#1565C0;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">1</div>
+          <div style="font-size:12.5px;color:#333;line-height:1.5">O <b>assinador.iti.br já foi aberto</b> em outra aba. Alterne para ela e faça login com sua <b>conta gov.br</b> (nível prata ou ouro).</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="min-width:22px;height:22px;border-radius:50%;background:#1565C0;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">2</div>
+          <div style="font-size:12.5px;color:#333;line-height:1.5">Clique em <b>"Escolher arquivo"</b> e selecione o PDF que acabou de baixar.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="min-width:22px;height:22px;border-radius:50%;background:#1565C0;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">3</div>
+          <div style="font-size:12.5px;color:#333;line-height:1.5">Posicione a assinatura e clique em <b>"Assinar"</b>. Um código será enviado por <b>SMS</b> para confirmar.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="min-width:22px;height:22px;border-radius:50%;background:#2E7D32;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">4</div>
+          <div style="font-size:12.5px;color:#333;line-height:1.5">Baixe o <b>PDF assinado</b> e anexe ao seu <b>Processo SEI</b> junto com os documentos comprobatórios.</div>
+        </div>
+      </div>
+    </div>
+    <!-- Aviso conta -->
+    <div style="background:#FFF8E1;border-left:3px solid #F9A825;border-radius:6px;padding:10px 12px;font-size:11.5px;color:#5D4037;margin-bottom:16px;line-height:1.5">
+      💡 <b>Não consegue assinar agora?</b> Sem problemas — o PDF já está salvo no seu computador. Você pode assinar mais tarde, abrindo novamente o assinador.iti.br e fazendo upload do arquivo.<br><br>
+      Conta gov.br nível <b>bronze</b> não funciona para assinar. Para elevar o nível, use o app gov.br (validação bancária ou biometria facial).
+    </div>
+    <!-- Botões -->
+    <div style="display:flex;gap:10px">
+      <button onclick="window.open('https://assinador.iti.br','_blank');return false"
+        style="flex:1;padding:10px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">
+        🔗 Abrir assinador.iti.br novamente
+      </button>
+      <button onclick="document.getElementById('modalAssinatura').style.display='none'"
+        style="padding:10px 18px;background:#F5F5F5;color:#333;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>
+<!-- ===== FIM MODAL ===== -->
+
+</body>
+</html>

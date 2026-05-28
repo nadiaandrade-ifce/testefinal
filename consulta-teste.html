@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Horários Docentes — IFCE Canindé</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f2eb;--card:#fff;--g1:#14532d;--g2:#166534;--g3:#22c55e;--g4:#86efac;--gbg:#f0fdf4;--gold:#eab308;--blue:#1d4ed8;--bluebg:#dbeafe;--bluelight:#3b82f6;--attgreen:#15803d;--attbg:#dcfce7;--txt:#1a1a1a;--txt2:#6b7280;--bdr:#e5e7eb;--r:12px;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04)}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;padding-bottom:40px}
+
+.hdr{background:var(--g1);color:#fff;padding:20px 16px 44px;text-align:center;position:relative;overflow:hidden}
+.hdr::after{content:'';position:absolute;bottom:-30px;left:-20px;right:-20px;height:60px;background:var(--bg);border-radius:50% 50% 0 0}
+.hdr-badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:500;letter-spacing:.5px;margin-bottom:10px;backdrop-filter:blur(4px)}
+.hdr h1{font-family:'Fraunces',serif;font-size:22px;font-weight:700;letter-spacing:-.3px;line-height:1.3}
+.hdr p{font-size:12px;opacity:.7;margin-top:4px}
+
+.ctn{max-width:520px;margin:0 auto;padding:0 14px}
+
+.search-wrap{margin-top:-12px;position:relative;z-index:2}
+.search-box{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;border:2px solid transparent;transition:border-color .2s}
+.search-box:focus-within{border-color:var(--g3)}
+.search-box label{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px}
+.search-box input{width:100%;border:none;outline:none;font-size:16px;font-family:inherit;color:var(--txt);background:transparent;padding:4px 0}
+.search-box input::placeholder{color:#c4c8cc}
+
+.results{margin-top:10px}
+.res-item{background:var(--card);border-radius:var(--r);padding:14px 16px;margin-bottom:6px;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;transition:transform .1s,box-shadow .15s;border:1px solid var(--bdr)}
+.res-item:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.res-item:active{transform:scale(.98)}
+.res-avatar{width:38px;height:38px;border-radius:50%;background:var(--g1);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:15px;flex-shrink:0}
+.res-info{flex:1;min-width:0}
+.res-name{font-weight:600;font-size:14px}
+.res-sub{font-size:11px;color:var(--txt2);margin-top:1px}
+
+.grade-view{margin-top:16px;display:none}
+.grade-view.active{display:block}
+.prof-card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:14px;border:1px solid var(--bdr)}
+.prof-back{font-size:12px;color:var(--bluelight);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:12px;font-weight:500}
+.prof-back:hover{text-decoration:underline}
+.prof-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.prof-av-lg{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:22px;flex-shrink:0}
+.prof-nm{font-family:'Fraunces',serif;font-size:20px;font-weight:700;line-height:1.2}
+.prof-campus{font-size:12px;color:var(--txt2);margin-top:2px}
+.prof-stats{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.stat{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600}
+.stat-aula{background:var(--bluebg);color:var(--blue)}
+.stat-att{background:var(--attbg);color:var(--attgreen)}
+
+.leg{display:flex;gap:12px;margin-bottom:10px;font-size:11px;color:var(--txt2);flex-wrap:wrap}
+.leg-i{display:flex;align-items:center;gap:5px}
+.leg-dot{width:10px;height:10px;border-radius:3px}
+
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse;font-size:11px;min-width:500px}
+th{background:var(--g1);color:#fff;padding:8px 4px;font-weight:600;text-align:center;font-size:10px;letter-spacing:.3px;text-transform:uppercase;position:sticky;top:0}
+td{padding:3px 2px;border:1px solid #eee;text-align:center;vertical-align:top;height:36px}
+td.slot-label{background:var(--gbg);font-weight:600;color:var(--g1);font-size:9px;text-align:left;padding-left:6px;width:72px;white-space:nowrap}
+.cell-aula{background:var(--blue);color:#fff;border-radius:4px;padding:3px 4px;font-size:8px;line-height:1.25;margin:1px;min-height:30px;display:flex;flex-direction:column;justify-content:center}
+.cell-att{background:var(--attgreen);color:#fff;border-radius:4px;padding:3px 4px;font-size:9px;line-height:1.25;margin:1px;min-height:30px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.cell-aula .disc{font-weight:700;font-size:8.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px;display:block}
+.cell-aula .turma{font-size:7.5px;opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px;display:block}
+.cell-att .att-txt{font-weight:700;font-size:9px}
+.cell-att .att-sub{font-size:7.5px;opacity:.85}
+
+.disc-list{margin-top:14px}
+.disc-title{font-size:12px;font-weight:700;color:var(--g1);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.disc-item{font-size:12px;padding:6px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.disc-item:last-child{border-bottom:none}
+.disc-nm{flex:1;min-width:0}
+.disc-ch{background:var(--bluebg);color:var(--blue);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;flex-shrink:0}
+
+.empty{text-align:center;padding:40px 20px;color:var(--txt2)}
+.empty-icon{font-size:40px;margin-bottom:10px;opacity:.4}
+.empty-txt{font-size:14px}
+
+.ft{text-align:center;padding:20px 14px;font-size:10px;color:var(--txt2);margin-top:20px}
+.ft a{color:var(--g2);text-decoration:none}
+
+@media(max-width:380px){
+  .hdr h1{font-size:18px}
+  table{min-width:440px}
+  .prof-nm{font-size:17px}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+<div class="hdr-badge" id="semBadge">IFCE Campus Canindé</div>
+<h1>Consulta de Horários</h1>
+<p style="font-size:13px;opacity:1;margin-top:6px;font-weight:500;background:rgba(255,255,255,.12);display:inline-block;padding:4px 16px;border-radius:20px">Aulas e atendimento a estudantes</p>
+</div>
+
+<div class="ctn">
+<div class="search-wrap" id="searchWrap">
+<div class="search-box">
+<label>Buscar docente</label>
+<input type="text" id="searchInput" placeholder="Digite o nome do professor..." autocomplete="off" autofocus>
+</div>
+<div class="results" id="results"></div>
+</div>
+
+<div class="grade-view" id="gradeView">
+<div class="prof-card">
+<div class="prof-back" onclick="voltar()">&#8592; Voltar à busca</div>
+<div class="prof-header">
+<div class="prof-av-lg" id="profAvatar"></div>
+<div><div class="prof-nm" id="profNome"></div><div class="prof-campus" id="profCampus">IFCE Campus Canindé</div></div>
+</div>
+<div class="prof-stats" id="profStats"></div>
+<div class="leg">
+<div class="leg-i"><div class="leg-dot" style="background:var(--blue)"></div><span>Aula</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#0277BD"></div><span>Aula (externa)</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:var(--attgreen)"></div><span>Atendimento</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#7B1FA2"></div><span>Preparação</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#00838F"></div><span>Apoio ao Ensino (reuniões)</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#E65100"></div><span>Pesquisa</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#AD1457"></div><span>Extensão</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#4527A0"></div><span>Coordenação</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#0D47A1"></div><span>Gestão</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#00695C"></div><span>Orientação</span></div>
+<div class="leg-i"><div class="leg-dot" style="background:#F9A825"></div><span>Capacitação</span></div>
+</div>
+<div class="tbl-wrap"><table id="gradeTable"></table></div>
+<div class="disc-list" id="discList"></div>
+</div>
+</div>
+</div>
+
+<div class="ft">IFCE Campus Canindé — Consulta pública de horários docentes<br>Resoluções 39/2016 e 63/2018<br><span id="syncStatus" style="font-size:9px;color:#9ca3af">Conectando...</span></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
+import { getFirestore, doc, getDoc, collection, query, where, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
+
+// ============================================================
+// Firebase config (proposta-completa-dev)
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCBQHZ-yYgP_5fQB4fiPybnzNN7qEvT2eQ",
+  authDomain: "proposta-completa-dev.firebaseapp.com",
+  projectId: "proposta-completa-dev",
+  storageBucket: "proposta-completa-dev.firebasestorage.app",
+  messagingSenderId: "101272733606",
+  appId: "1:101272733606:web:dbcb0e49b9331a22d13167"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let LIVE = {};
+let currentProf = null;
+let semestreVigente = '';
+
+function esc(s) { return s == null ? '' : String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function remAc(s) { return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+function initials(n) { var p = n.split(' '); return (p[0] ? p[0][0] : '') + (p.length > 1 ? p[p.length - 1][0] : ''); }
+
+// ===================== CONSTANTS =====================
+const DIAS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+const SLOTS = [
+  { id: 'AM', l: '07:45', h: '07:45-08:45' }, { id: 'BM', l: '08:45', h: '08:45-09:45' },
+  { id: 'CM', l: '10:00', h: '10:00-11:00' }, { id: 'DM', l: '11:00', h: '11:00-12:00' },
+  { id: 'AT', l: '13:45', h: '13:45-14:45' }, { id: 'BT', l: '14:45', h: '14:45-15:45' },
+  { id: 'CT', l: '16:00', h: '16:00-17:00' }, { id: 'DT', l: '17:00', h: '17:00-18:00' },
+  { id: 'AN', l: '18:30', h: '18:30-19:20' }, { id: 'BN', l: '19:20', h: '19:20-20:10' },
+  { id: 'CN', l: '20:30', h: '20:30-21:20' }, { id: 'DN', l: '21:20', h: '21:20-22:00' }
+];
+
+const CORES = {
+  aula: '#1d4ed8', aula_externa: '#0277BD', atendimento: '#15803d',
+  prep: '#7B1FA2', apoio: '#00838F', pesquisa: '#E65100',
+  extensao: '#AD1457', coord: '#4527A0', gestao: '#0D47A1',
+  orient: '#00695C', capac: '#F9A825', outro: '#78909C'
+};
+const LABELS = {
+  atendimento: 'Atend. a alunos', aula_externa: 'Aula',
+  prep: 'Preparação', apoio: 'Apoio ao Ensino', pesquisa: 'Pesquisa',
+  extensao: 'Extensão', coord: 'Coordenação', gestao: 'Gestão',
+  orient: 'Orientação', capac: 'Capacitação', outro: 'Outro'
+};
+
+// ===================== FIREBASE INIT =====================
+async function init() {
+  try {
+    const statusDoc = await getDoc(doc(db, 'configuracoes', 'status'));
+    if (statusDoc.exists() && statusDoc.data().vigente) {
+      semestreVigente = statusDoc.data().vigente;
+      document.getElementById('semBadge').textContent = 'IFCE Campus Canindé · ' + semestreVigente;
+    } else {
+      document.getElementById('semBadge').textContent = 'IFCE Campus Canindé';
+      document.getElementById('syncStatus').innerHTML = '&#9888; O administrador precisa definir o semestre vigente no painel admin.';
+      document.getElementById('syncStatus').style.color = '#f59e0b';
+      await loadAllHorarios();
+      return;
+    }
+    await loadHorariosBySemestre(semestreVigente);
+  } catch (e) {
+    console.error('Erro na inicialização:', e);
+    document.getElementById('syncStatus').innerHTML = '&#10060; Erro: ' + e.message;
+    document.getElementById('syncStatus').style.color = '#C62828';
+    await loadAllHorarios();
+  }
+}
+
+async function loadHorariosBySemestre(sem) {
+  try {
+    const q = query(collection(db, 'horarios'), where('semestre', '==', sem));
+    const snap = await getDocs(q);
+    let count = 0;
+    snap.forEach(d => { const data = d.data(); if (data.nome) { LIVE[data.nome] = data; count++; } });
+
+    if (count === 0) { await loadAllHorarios(); return; }
+
+    updateSyncStatus(count, sem);
+
+    onSnapshot(q, snap => {
+      snap.forEach(d => { const data = d.data(); if (data.nome) LIVE[data.nome] = data; });
+      if (currentProf && LIVE[currentProf]) showProf(currentProf);
+    });
+  } catch (e) {
+    console.error('Erro carregando horários por semestre:', e);
+    await loadAllHorarios();
+  }
+}
+
+async function loadAllHorarios() {
+  try {
+    const snap = await getDocs(collection(db, 'horarios'));
+    let count = 0;
+    snap.forEach(d => { const data = d.data(); if (data.nome) { LIVE[data.nome] = data; count++; } });
+
+    document.getElementById('syncStatus').innerHTML = '&#9679; ' + count + ' docentes carregados (todos os semestres)';
+    document.getElementById('syncStatus').style.color = '#22c55e';
+
+    onSnapshot(collection(db, 'horarios'), snap => {
+      snap.forEach(d => { const data = d.data(); if (data.nome) LIVE[data.nome] = data; });
+      if (currentProf && LIVE[currentProf]) showProf(currentProf);
+    });
+  } catch (e) {
+    document.getElementById('syncStatus').innerHTML = '&#10060; Erro: ' + e.message;
+    document.getElementById('syncStatus').style.color = '#C62828';
+  }
+}
+
+function updateSyncStatus(count, sem) {
+  var el = document.getElementById('syncStatus');
+  var last = null;
+  Object.keys(LIVE).forEach(function (k) {
+    var d = LIVE[k].atualizado;
+    if (d && (!last || d > last)) last = d;
+  });
+  el.innerHTML = '&#9679; Semestre ' + sem + ' — ' + count + ' docentes' + (last ? ' — atualizado: ' + new Date(last).toLocaleString('pt-BR') : '');
+  el.style.color = '#22c55e';
+}
+
+// ===================== SEARCH =====================
+const input = document.getElementById('searchInput');
+const resultsEl = document.getElementById('results');
+const searchWrap = document.getElementById('searchWrap');
+const gradeView = document.getElementById('gradeView');
+
+input.addEventListener('input', function () {
+  var q = remAc(this.value.trim());
+  if (q.length < 1) { resultsEl.innerHTML = ''; return; }
+
+  var names = Object.keys(LIVE).filter(function (n) { return remAc(n).indexOf(q) >= 0; }).sort(function (a, b) { return a.localeCompare(b, 'pt'); });
+
+  if (names.length === 0) {
+    resultsEl.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-txt">Nenhum docente encontrado</div></div>';
+    return;
+  }
+
+  resultsEl.innerHTML = names.slice(0, 8).map(function (nm) {
+    var d = LIVE[nm];
+    var nDisc = (d.disciplinas || []).length;
+    // Soma aulas do banco + aulas extras (manuais) — Res. 171 Item 3b
+    var nExt = 0;
+    var DIAS_SEM = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+    DIAS_SEM.forEach(function(dia){
+      (((d.grade||{})[dia])||[]).forEach(function(b){
+        if((b.tipo||b.tp)==='aula_externa')nExt++;
+      });
+    });
+    var totalAulas = (d.total_aulas || 0) + nExt;
+    return '<div class="res-item" onclick="showProf(\'' + esc(nm.replace(/'/g, "\\'")) + '\')">'
+      + '<div class="res-avatar">' + initials(nm) + '</div>'
+      + '<div class="res-info"><div class="res-name">' + esc(nm) + '</div>'
+      + '<div class="res-sub">' + totalAulas + 'h aulas' + (nExt>0?' ('+nExt+' ext.)':'') + ' · ' + nDisc + ' disciplina' + (nDisc !== 1 ? 's' : '') + '</div></div></div>';
+  }).join('');
+});
+
+// ===================== SHOW PROFESSOR =====================
+window.showProf = function (nm) {
+  var d = LIVE[nm]; if (!d) return;
+  currentProf = nm;
+  searchWrap.style.display = 'none';
+  gradeView.classList.add('active');
+  document.getElementById('profAvatar').textContent = initials(nm);
+  document.getElementById('profNome').textContent = nm;
+  document.getElementById('profCampus').textContent = 'IFCE Campus ' + (d.campus || 'Canindé') + (semestreVigente ? ' · Semestre ' + semestreVigente : '');
+
+  var grade = d.grade || {};
+
+  // Count slots by type
+  var aulaCount = 0, extCount = 0, attCount = 0, outroCount = 0;
+  DIAS.forEach(function (dia) {
+    (grade[dia] || []).forEach(function (b) {
+      var tp = b.tipo || b.tp || 'aula';
+      if (tp === 'aula') aulaCount++;
+      else if (tp === 'aula_externa') extCount++;
+      else if (tp === 'atendimento') attCount++;
+      else outroCount++;
+    });
+  });
+
+  var totalSlots = aulaCount + extCount + attCount + outroCount;
+  var stats = '<div class="stat stat-aula">' + (aulaCount + extCount) + 'h aulas' + (extCount > 0 ? ' (' + extCount + ' ext.)' : '') + '</div>';
+  if (attCount > 0) stats += '<div class="stat stat-att">' + attCount + 'h atendimento</div>';
+  if (outroCount > 0) stats += '<div class="stat" style="background:#EDE7F6;color:#4527A0">' + outroCount + 'h outras ativid.</div>';
+  stats += '<div class="stat" style="background:#F5F5F5;color:#333;font-weight:700">Total: ' + totalSlots + 'h</div>';
+  document.getElementById('profStats').innerHTML = stats;
+
+  // Build table
+  var h = '<thead><tr><th></th>';
+  DIAS.forEach(function (dia) { h += '<th>' + dia.substring(0, 3) + '</th>'; });
+  h += '</tr></thead><tbody>';
+
+  // Track activities by category
+  var atividadesAtendimento = [], atividadesPrep = [], atividadesApoio = [], atividadesOrient = [], atividadesCapac = [];
+  var atividadesPesquisa = [], atividadesExtensao = [], atividadesGestao = [], atividadesOutras = [];
+  var aulasExtras = []; // Res. 171 Item 3b — aulas inseridas manualmente
+
+  SLOTS.forEach(function (s) {
+    var parts = s.h.split('-'), si = parts[0], sf = parts[1];
+    h += '<tr><td class="slot-label">' + s.l + '</td>';
+    DIAS.forEach(function (dia) {
+      var bs = grade[dia] || [];
+      var b = bs.find(function (x) {
+        var bi = x.inicio || x.i;
+        var bf = x.fim || x.f;
+        return bi === si && bf === sf;
+      });
+      if (b) {
+        var tp = b.tipo || b.tp || 'aula';
+        var cor = CORES[tp] || '#78909C';
+        var atv = b.atividade || b.a || '';
+        var label = LABELS[tp] || atv;
+
+        // Track for categorized listing
+        if (tp === 'aula') { /* tracked via disciplinas */ }
+        else if (tp === 'aula_externa') { var itemExt = (atv.replace(/^Aula(?:\s*Externa)?\s*:\s*/,'') || 'Aula extra') + ' — ' + dia + ' ' + si; if (aulasExtras.indexOf(itemExt) === -1) aulasExtras.push(itemExt); }
+        else if (tp === 'atendimento') { var item = 'Atendimento a alunos — ' + dia + ' ' + si; if (atividadesAtendimento.indexOf(item) === -1) atividadesAtendimento.push(item); }
+        else if (tp === 'prep') { var item2 = (atv || label) + ' — ' + dia + ' ' + si; if (atividadesPrep.indexOf(item2) === -1) atividadesPrep.push(item2); }
+        else if (tp === 'apoio') { var item3 = (atv || label) + ' — ' + dia + ' ' + si; if (atividadesApoio.indexOf(item3) === -1) atividadesApoio.push(item3); }
+        else if (tp === 'orient') { var item4 = (atv || label) + ' — ' + dia + ' ' + si; if (atividadesOrient.indexOf(item4) === -1) atividadesOrient.push(item4); }
+        else if (tp === 'capac') { var item5 = (atv || label) + ' — ' + dia + ' ' + si; if (atividadesCapac.indexOf(item5) === -1) atividadesCapac.push(item5); }
+        else if (tp === 'pesquisa') { atividadesPesquisa.push((atv || label) + ' — ' + dia + ' ' + si); }
+        else if (tp === 'extensao') { atividadesExtensao.push((atv || label) + ' — ' + dia + ' ' + si); }
+        else if (tp === 'coord' || tp === 'gestao') { atividadesGestao.push((atv || label) + ' — ' + dia + ' ' + si); }
+        else { atividadesOutras.push((atv || label) + ' — ' + dia + ' ' + si); }
+
+        if (tp === 'aula_externa') {
+          var extLabel = atv || 'Aula';
+          if (extLabel.length > 20) extLabel = extLabel.substring(0, 18) + '...';
+          h += '<td><div style="background:#0277BD;color:#fff;border-radius:4px;padding:3px 4px;font-size:8px;line-height:1.25;margin:1px;min-height:30px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:600" title="' + esc(atv) + '">' + esc(extLabel) + '</div></td>';
+        } else if (tp === 'aula') {
+          var ps = atv.split(' — ');
+          h += '<td><div class="cell-aula" title="' + esc(atv) + '"><span class="disc">' + esc(ps[0]) + '</span><span class="turma">' + esc(ps[1] || b.turma || b.t || '') + '</span></div></td>';
+        } else if (tp === 'atendimento') {
+          h += '<td><div class="cell-att"><span class="att-txt">Atend.</span><span class="att-sub">a alunos</span></div></td>';
+        } else {
+          var shortLabel = label.length > 16 ? label.substring(0, 14) + '...' : label;
+          var txtCor = tp === 'capac' ? '#333' : '#fff';
+          h += '<td><div style="background:' + cor + ';color:' + txtCor + ';border-radius:4px;padding:3px 4px;font-size:8px;line-height:1.25;margin:1px;min-height:30px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:600" title="' + esc(atv || label) + '">' + esc(shortLabel) + '</div></td>';
+        }
+      } else {
+        h += '<td></td>';
+      }
+    });
+    h += '</tr>';
+  });
+  h += '</tbody>';
+  document.getElementById('gradeTable').innerHTML = h;
+
+  // Build categorized activity list
+  var discs = d.disciplinas || [];
+  var dl = '<div class="disc-title">&#128218; Atividades de Ensino</div>';
+  discs.forEach(function (disc) {
+    var nome = disc.nome || disc.n || '';
+    var turma = disc.turma || disc.t || '';
+    var ch = disc.ch || disc.c || 0;
+    dl += '<div class="disc-item"><span class="disc-nm">' + esc(nome) + (turma && turma !== '—' ? ' <span style="color:#9ca3af;font-size:10px">' + esc(turma) + '</span>' : '') + '</span><span class="disc-ch">' + ch + 'h</span></div>';
+  });
+  if (discs.length === 0) {
+    dl += '<div class="disc-item" style="color:#9ca3af;font-style:italic"><span class="disc-nm">Nenhuma disciplina registrada</span></div>';
+  }
+  if (aulasExtras.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#0277BD">&#127979; Aulas Extras (FIC, pós-graduação, etc.)</div>';
+    aulasExtras.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#E3F2FD;color:#0277BD">1h</span></div>';
+    });
+  }
+  if (atividadesAtendimento.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#15803d">&#128101; Atendimento a Alunos</div>';
+    atividadesAtendimento.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#dcfce7;color:#15803d">1h</span></div>';
+    });
+  }
+  if (atividadesPrep.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#7B1FA2">&#128221; Preparação + Planejamento</div>';
+    atividadesPrep.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#F3E5F5;color:#7B1FA2">1h</span></div>';
+    });
+  }
+  if (atividadesApoio.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#00838F">&#129309; Apoio ao Ensino (reuniões)</div>';
+    atividadesApoio.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#E0F7FA;color:#00838F">1h</span></div>';
+    });
+  }
+  if (atividadesOrient.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#00695C">&#127891; Orientação</div>';
+    atividadesOrient.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#E0F2F1;color:#00695C">1h</span></div>';
+    });
+  }
+  if (atividadesCapac.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#F9A825">&#128214; Capacitação</div>';
+    atividadesCapac.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#FFF8E1;color:#F57F17">1h</span></div>';
+    });
+  }
+  if (atividadesPesquisa.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#E65100">&#128300; Atividades de Pesquisa</div>';
+    atividadesPesquisa.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#FFF3E0;color:#E65100">1h</span></div>';
+    });
+  }
+  if (atividadesExtensao.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#AD1457">&#127760; Atividades de Extensão</div>';
+    atividadesExtensao.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#FCE4EC;color:#AD1457">1h</span></div>';
+    });
+  }
+  if (atividadesGestao.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#4527A0">&#127963; Atividades de Gestão</div>';
+    atividadesGestao.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#EDE7F6;color:#4527A0">1h</span></div>';
+    });
+  }
+  if (atividadesOutras.length > 0) {
+    dl += '<div class="disc-title" style="margin-top:14px;color:#78909C">&#128221; Outras Atividades</div>';
+    atividadesOutras.forEach(function (a) {
+      dl += '<div class="disc-item"><span class="disc-nm">' + esc(a) + '</span><span class="disc-ch" style="background:#ECEFF1;color:#546E7A">1h</span></div>';
+    });
+  }
+
+  // Última atualização
+  if (d.atualizado) {
+    dl += '<div style="text-align:right;font-size:10px;color:var(--txt2);margin-top:10px">Atualizado: ' + new Date(d.atualizado).toLocaleString('pt-BR') + '</div>';
+  }
+
+  document.getElementById('discList').innerHTML = dl;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.voltar = function () {
+  currentProf = null;
+  gradeView.classList.remove('active');
+  searchWrap.style.display = 'block';
+  input.focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// ===================== INIT =====================
+init();
+
+// Check URL hash for direct link
+if (window.location.hash) {
+  var nm = decodeURIComponent(window.location.hash.substring(1));
+  setTimeout(function () { if (LIVE[nm]) showProf(nm); }, 1500);
+}
+</script>
+</body>
+</html>

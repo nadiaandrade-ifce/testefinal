@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.gstatic.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-ancestors 'none';">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Gestão PIT/RIT IFCE Canindé</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f172a;--card:#1e293b;--card2:#334155;--accent:#22d3ee;--accent2:#06b6d4;--gold:#f59e0b;--green:#10b981;--red:#ef4444;--txt:#e2e8f0;--txt2:#94a3b8;--bdr:#475569;--r:10px}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:40px;max-width:400px;width:100%;text-align:center}
+.login-box h2{font-size:22px;margin-bottom:6px;color:var(--accent)}
+.login-box p{font-size:13px;color:var(--txt2);margin-bottom:24px}
+.btn-google{display:inline-flex;align-items:center;gap:10px;padding:12px 28px;border:2px solid var(--bdr);background:var(--card2);border-radius:var(--r);cursor:pointer;font-size:14px;font-family:inherit;color:var(--txt);transition:all .2s}
+.btn-google:hover{border-color:var(--accent);background:#475569}
+.login-error{margin-top:12px;font-size:12px;color:var(--red);display:none}
+
+.app{display:none}
+.hdr{background:linear-gradient(135deg,#0c4a6e,#164e63);padding:16px 20px;border-bottom:3px solid var(--accent);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr h1{font-size:17px;font-weight:700;color:#fff}
+.hdr-user{font-size:12px;color:var(--txt2)}
+.btn{padding:8px 16px;border:1px solid var(--bdr);background:var(--card2);border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;color:var(--txt);font-family:inherit;transition:all .15s}
+.btn:hover{border-color:var(--accent)}.btn-p{background:var(--accent2);color:#fff;border-color:var(--accent2)}.btn-p:hover{background:#0891b2}
+.btn-danger{background:var(--red);color:#fff;border-color:var(--red)}.btn-sm{padding:5px 12px;font-size:12px}
+.ctn{max-width:900px;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.card h3{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.card .sub{font-size:12px;color:var(--txt2);margin-bottom:14px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-active{background:#064e3b;color:#34d399;border:1px solid #10b981}
+.badge-inactive{background:#1e293b;color:#94a3b8;border:1px solid #475569}
+.sem-list{display:flex;flex-direction:column;gap:8px}
+.sem-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card2);border-radius:var(--r);border:1px solid var(--bdr);flex-wrap:wrap;gap:8px}
+.sem-item.active{border-color:var(--green);background:#064e3b30}
+.sem-nome{font-weight:600;font-size:14px}
+.sem-info{font-size:11px;color:var(--txt2)}
+.sem-actions{display:flex;gap:6px}
+.form-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;align-items:flex-end}
+.form-group{flex:1;min-width:140px}
+.form-group label{display:block;font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group select{width:100%;padding:8px 10px;border:1px solid var(--bdr);border-radius:var(--r);font-size:13px;color:var(--txt);background:var(--card);font-family:inherit}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--accent)}
+.upload-zone{border:2px dashed var(--bdr);border-radius:var(--r);padding:30px;text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:rgba(34,211,238,.05)}
+.upload-zone p{font-size:13px;color:var(--txt2);margin-top:8px}
+.log{background:#0f172a;border:1px solid var(--bdr);border-radius:var(--r);padding:12px;max-height:200px;overflow-y:auto;font-family:monospace;font-size:11px;color:var(--green);margin-top:12px;white-space:pre-wrap}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:14px;text-align:center}
+.stat .num{font-size:28px;font-weight:800;color:var(--accent)}
+.stat .lbl{font-size:11px;color:var(--txt2);margin-top:2px}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:600;z-index:999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-wrap">
+<div class="login-box">
+<div style="font-size:32px;margin-bottom:12px">&#128274;</div>
+<h2>Painel Administrativo</h2>
+<p>IFCE Campus Canindé — Gestão de Semestres e Horários</p>
+
+<div id="emailStep">
+<div style="text-align:left;margin-bottom:6px"><label style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Email do administrador</label></div>
+<input type="email" id="emailInput" placeholder="seu.email@ifce.edu.br" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding:12px 14px;border:2px solid var(--bdr);border-radius:8px;font-size:15px;font-family:inherit;color:#e2e8f0;background:var(--card2);outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--bdr)'">
+<button class="btn-google" onclick="doLogin()" id="btnEnviar" style="width:100%;margin-top:12px;justify-content:center;background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600">
+&#9993; Enviar link de acesso
+</button>
+</div>
+
+<div id="sentStep" style="display:none">
+<div style="font-size:48px;margin-bottom:12px">&#9993;&#65039;</div>
+<div style="font-size:16px;font-weight:700;color:var(--accent);margin-bottom:8px">Link enviado!</div>
+<div style="font-size:13px;color:#94a3b8;margin-bottom:4px">Verifique sua caixa de entrada em:</div>
+<div style="font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:16px" id="sentEmail"></div>
+<div style="font-size:12px;color:#94a3b8;background:var(--card2);padding:12px;border-radius:8px;text-align:left;line-height:1.6;border:1px solid var(--bdr)">
+&#128161; <strong>Dica:</strong> O link chega em poucos segundos. Verifique a pasta <strong>Spam</strong>. Clique no link do email para entrar.
+</div>
+<button class="btn-google" onclick="voltarEmail()" style="margin-top:16px;font-size:12px;padding:8px 16px">&#8592; Usar outro email</button>
+</div>
+
+<div class="login-error" id="loginError"></div>
+<p style="margin-top:16px;font-size:11px;color:#64748b">Acesso restrito a administradores autorizados.</p>
+</div>
+</div>
+
+<div class="app" id="app">
+<div class="hdr">
+<h1>⚙️ Admin — PIT/RIT IFCE Canindé</h1>
+<div style="display:flex;align-items:center;gap:12px">
+<span class="hdr-user" id="userDisplay"></span>
+<button class="btn btn-sm" onclick="doLogout()">Sair</button>
+</div>
+</div>
+
+<div class="ctn">
+<div class="stats">
+<div class="stat"><div class="num" id="statVigente">—</div><div class="lbl">Semestre Vigente</div></div>
+<div class="stat"><div class="num" id="statSemestres">0</div><div class="lbl">Semestres Cadastrados</div></div>
+<div class="stat"><div class="num" id="statDocentes">0</div><div class="lbl">Docentes Publicados</div></div>
+</div>
+
+<!-- CARD: Controle de Vigência -->
+<div class="card">
+<h3>📅 Controle de Semestres e Vigência</h3>
+<div class="sub">Cadastre semestres e defina qual é o vigente. A consulta do aluno carregará automaticamente o semestre ativo.</div>
+
+<div class="form-row">
+<div class="form-group"><label>Novo Semestre</label><input type="text" id="newSem" placeholder="Ex: 2026.1"></div>
+<div class="form-group"><label>&nbsp;</label><button class="btn btn-p" onclick="addSemestre()">+ Adicionar</button></div>
+</div>
+
+<div class="sem-list" id="semList">
+<div style="text-align:center;padding:20px;color:var(--txt2);font-size:13px">Carregando semestres...</div>
+</div>
+</div>
+
+<!-- CARD: Upload de Planilha -->
+<div class="card">
+<h3>📊 Importar Horários (Planilha)</h3>
+<div class="sub">Faça upload de uma planilha .xlsx ou .csv com a estrutura: <b>Professor | Horário | Segunda | Terça | Quarta | Quinta | Sexta | Fonte</b>. O sistema extrairá os dados dos docentes e salvará no Firestore atrelados ao semestre selecionado.</div>
+
+<div class="form-row">
+<div class="form-group"><label>Semestre de Destino</label><select id="uploadSem"></select></div>
+</div>
+
+<div class="upload-zone" id="uploadZone" onclick="document.getElementById('xlsxInput').click()">
+<div style="font-size:36px">📤</div>
+<p>Clique ou arraste uma planilha aqui</p>
+<p style="font-size:11px;color:#64748b">Formatos aceitos: .xlsx, .xls ou .csv</p>
+</div>
+<input type="file" id="xlsxInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleXLSX(event)">
+
+<div class="log" id="importLog" style="display:none"></div>
+</div>
+
+<!-- CARD: Dados Publicados -->
+<div class="card">
+<h3>📊 Dados Publicados no Firestore</h3>
+<div class="sub">Docentes com grade publicada por semestre.</div>
+<div id="publishedData" style="font-size:13px;color:var(--txt2)">Carregando...</div>
+<div style="margin-top:12px">
+<button class="btn btn-danger btn-sm" onclick="limparSemestre()">🗑️ Limpar dados de um semestre</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK v9 modular via CDN -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
+import { getFirestore, doc, setDoc, getDoc, getDocs, deleteDoc, collection, query, where, onSnapshot, writeBatch } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
+import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js';
+
+// ============================================================
+// 🔧 COLE SEU firebaseConfig AQUI
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCBQHZ-yYgP_5fQB4fiPybnzNN7qEvT2eQ",
+  authDomain: "proposta-completa-dev.firebaseapp.com",
+  projectId: "proposta-completa-dev",
+  storageBucket: "proposta-completa-dev.firebasestorage.app",
+  messagingSenderId: "101272733606",
+  appId: "1:101272733606:web:dbcb0e49b9331a22d13167"
+};
+// ============================================================
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// VULN-02 FIX: Lista explícita de administradores autorizados
+const ADMIN_EMAILS = [
+  "nadia.andrade@ifce.edu.br",
+  "diren.caninde@ifce.edu.br",
+  "dg.caninde@ifce.edu.br"
+  // Adicione outros emails de gestores autorizados aqui
+];
+
+function isAdmin(email) {
+  return email && ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
+const $ = id => document.getElementById(id);
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// ===================== AUTH (Magic Link) =====================
+window.doLogin = async function() {
+  const email = $('emailInput').value.trim().toLowerCase();
+  const el = $('loginError');
+  el.style.display = 'none';
+
+  if (!email) { el.textContent = 'Digite seu email.'; el.style.display = 'block'; return; }
+  if (!isAdmin(email)) { el.textContent = 'Este email não é um administrador autorizado.'; el.style.display = 'block'; return; }
+
+  const btn = $('btnEnviar');
+  btn.disabled = true; btn.textContent = 'Enviando...'; btn.style.opacity = '0.6';
+
+  try {
+    const actionCodeSettings = {
+      url: window.location.href.split('?')[0],
+      handleCodeInApp: true
+    };
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    window.localStorage.setItem('emailForSignIn', email);
+    $('emailStep').style.display = 'none';
+    $('sentStep').style.display = 'block';
+    $('sentEmail').textContent = email;
+  } catch(e) {
+    el.textContent = 'Erro ao enviar: ' + e.message;
+    el.style.display = 'block';
+  }
+  btn.disabled = false; btn.innerHTML = '&#9993; Enviar link de acesso'; btn.style.opacity = '1';
+};
+
+window.voltarEmail = function() {
+  $('sentStep').style.display = 'none';
+  $('emailStep').style.display = 'block';
+  $('loginError').style.display = 'none';
+};
+
+window.doLogout = function() { signOut(auth); };
+
+// Completar login se veio do magic link
+if (isSignInWithEmailLink(auth, window.location.href)) {
+  let email = window.localStorage.getItem('emailForSignIn');
+  if (!email) {
+    email = window.prompt('Por favor, confirme seu email de administrador:');
+  }
+  if (email) {
+    signInWithEmailLink(auth, email, window.location.href).then(() => {
+      window.localStorage.removeItem('emailForSignIn');
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }).catch(e => {
+      const el = $('loginError');
+      if (el) { el.textContent = 'Erro no login: ' + e.message; el.style.display = 'block'; }
+    });
+  }
+}
+
+onAuthStateChanged(auth, user => {
+  if (user && isAdmin(user.email)) {
+    $('loginScreen').style.display = 'none';
+    $('app').style.display = 'block';
+    $('userDisplay').textContent = user.email;
+    loadSemestres();
+    loadPublishedStats();
+  } else if (user) {
+    // Email não é admin — faz signOut
+    signOut(auth);
+    const el = $('loginError');
+    el.textContent = 'O email ' + user.email + ' não é um administrador autorizado.';
+    el.style.display = 'block';
+  } else {
+    $('loginScreen').style.display = 'flex';
+    $('app').style.display = 'none';
+  }
+});
+
+// ===================== SEMESTRES =====================
+let semestres = [];
+let vigente = '';
+
+async function loadSemestres() {
+  // Lê vigente
+  try {
+    const statusDoc = await getDoc(doc(db, 'configuracoes', 'status'));
+    if (statusDoc.exists()) {
+      vigente = statusDoc.data().vigente || '';
+    }
+  } catch(e) { console.error('Erro lendo vigente:', e); }
+
+  // Lê semestres cadastrados
+  try {
+    const snap = await getDocs(collection(db, 'semestres'));
+    semestres = [];
+    snap.forEach(d => semestres.push({ id: d.id, ...d.data() }));
+    semestres.sort((a, b) => b.id.localeCompare(a.id));
+  } catch(e) { console.error('Erro lendo semestres:', e); }
+
+  renderSemestres();
+  updateUploadSelect();
+  $('statVigente').textContent = vigente || '—';
+  $('statSemestres').textContent = semestres.length;
+}
+
+function renderSemestres() {
+  const list = $('semList');
+  if (semestres.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--txt2);font-size:13px">Nenhum semestre cadastrado.</div>';
+    return;
+  }
+  list.innerHTML = semestres.map(s => {
+    const isVig = s.id === vigente;
+    return `<div class="sem-item ${isVig ? 'active' : ''}">
+      <div>
+        <span class="sem-nome">${s.id}</span>
+        ${isVig ? '<span class="badge badge-active" style="margin-left:8px">VIGENTE</span>' : '<span class="badge badge-inactive" style="margin-left:8px">inativo</span>'}
+        <div class="sem-info">Criado: ${s.criadoEm ? new Date(s.criadoEm).toLocaleDateString('pt-BR') : '—'}</div>
+      </div>
+      <div class="sem-actions">
+        ${!isVig ? `<button class="btn btn-sm btn-p" onclick="setVigente('${s.id}')">Definir Vigente</button>` : ''}
+        <button class="btn btn-sm btn-danger" onclick="removeSemestre('${s.id}')">Remover</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateUploadSelect() {
+  const sel = $('uploadSem');
+  sel.innerHTML = semestres.map(s => `<option value="${s.id}" ${s.id === vigente ? 'selected' : ''}>${s.id}${s.id === vigente ? ' (vigente)' : ''}</option>`).join('');
+}
+
+window.addSemestre = async function() {
+  const v = $('newSem').value.trim();
+  if (!v) return alert('Informe o código do semestre (ex: 2026.1)');
+  if (!/^\d{4}\.\d$/.test(v)) return alert('Formato inválido. Use AAAA.N (ex: 2026.1)');
+  try {
+    await setDoc(doc(db, 'semestres', v), { criadoEm: new Date().toISOString() });
+    $('newSem').value = '';
+    toast('Semestre ' + v + ' cadastrado!');
+    await loadSemestres();
+  } catch(e) { alert('Erro: ' + e.message); }
+};
+
+window.setVigente = async function(semId) {
+  if (!confirm('Definir "' + semId + '" como semestre vigente?\n\nA consulta do aluno passará a exibir apenas os dados deste semestre.')) return;
+  try {
+    await setDoc(doc(db, 'configuracoes', 'status'), { vigente: semId, atualizadoEm: new Date().toISOString() });
+    vigente = semId;
+    toast('Semestre vigente: ' + semId);
+    await loadSemestres();
+  } catch(e) { alert('Erro: ' + e.message); }
+};
+
+window.removeSemestre = async function(semId) {
+  if (!confirm('Remover semestre "' + semId + '"?\n\nIsso apagará o semestre E TODOS os horários de docentes vinculados a ele no Firestore.\n\nEsta ação é irreversível!')) return;
+  try {
+    // 1. Apagar todos os horários deste semestre
+    const q = query(collection(db, 'horarios'), where('semestre', '==', semId));
+    const snap = await getDocs(q);
+    let count = 0;
+    const bSize = 400;
+    let batch = writeBatch(db);
+    snap.forEach(d => {
+      batch.delete(d.ref);
+      count++;
+      if (count % bSize === 0) { batch.commit(); batch = writeBatch(db); }
+    });
+    if (count % bSize !== 0) await batch.commit();
+
+    // 2. Apagar o documento do semestre
+    await deleteDoc(doc(db, 'semestres', semId));
+
+    // 3. Se era o vigente, limpar vigência
+    if (semId === vigente) {
+      await setDoc(doc(db, 'configuracoes', 'status'), { vigente: '', atualizadoEm: new Date().toISOString() });
+      vigente = '';
+    }
+
+    toast('Semestre ' + semId + ' removido (' + count + ' horários apagados)');
+    await loadSemestres();
+    await loadPublishedStats();
+  } catch(e) { alert('Erro: ' + e.message); }
+};
+
+// ===================== STATS =====================
+async function loadPublishedStats() {
+  try {
+    const snap = await getDocs(collection(db, 'horarios'));
+    let count = 0;
+    snap.forEach(() => count++);
+    $('statDocentes').textContent = count;
+
+    // Show breakdown
+    const bySem = {};
+    snap.forEach(d => {
+      const data = d.data();
+      const sem = data.semestre || 'sem semestre';
+      bySem[sem] = (bySem[sem] || 0) + 1;
+    });
+    const html = Object.keys(bySem).sort().reverse().map(s =>
+      `<div style="padding:6px 0;border-bottom:1px solid var(--bdr)">${s}: <b>${bySem[s]}</b> docentes</div>`
+    ).join('') || 'Nenhum dado publicado.';
+    $('publishedData').innerHTML = html;
+  } catch(e) {
+    $('publishedData').textContent = 'Erro: ' + e.message;
+  }
+}
+
+// ===================== XLSX UPLOAD & PARSE =====================
+const uploadZone = $('uploadZone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  if (e.dataTransfer.files.length > 0) processXLSX(e.dataTransfer.files[0]);
+});
+
+window.handleXLSX = function(event) {
+  const f = event.target.files[0];
+  if (f) processXLSX(f);
+};
+
+// Slots de 1h (formato 2026.1+) — usados para expandir ranges
+const SLOTS_1H = [
+  ['07:45','08:45'], ['08:45','09:45'],
+  ['10:00','11:00'], ['11:00','12:00'],
+  ['13:45','14:45'], ['14:45','15:45'],
+  ['16:00','17:00'], ['17:00','18:00'],
+  ['18:30','19:20'], ['19:20','20:10'],
+  ['20:30','21:20'], ['21:20','22:00']
+];
+
+const DIAS_PLANILHA = ['Segunda','Terça','Quarta','Quinta','Sexta'];
+
+function padTime(t) {
+  // "7:45" -> "07:45"
+  const m = String(t).match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return t;
+  return String(m[1]).padStart(2,'0') + ':' + m[2];
+}
+
+// Expande "Manhã 7:45-9:45" em [['07:45','08:45'],['08:45','09:45']]
+// Expande "Tarde 13:45-18:00" em 4 slots de 1h pulando o gap 15:45-16:00
+// Pula gaps automaticamente porque varremos SLOTS_1H já com os intervalos.
+function parseHorarioRange(h) {
+  if (!h) return [];
+  const m = String(h).trim().match(/^(Manh[ãa]|Tarde|Noite)\s+(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/);
+  if (!m) return [];
+  const ini = padTime(m[2]);
+  const fim = padTime(m[3]);
+  const out = [];
+  for (const [s,e] of SLOTS_1H) {
+    if (s >= ini && e <= fim) out.push([s,e]);
+  }
+  return out;
+}
+
+// Parser de célula: dado "Filosofia III - Eletrônica S5 / Filosofia I - Eventos S1"
+// retorna [{disc:'Filosofia III', turma:'Eletrônica S5'}, {disc:'Filosofia I', turma:'Eventos S1'}].
+// Heurística:
+// - Se a célula tem ' / ', conta quantas das partes têm ' - '. Se TODAS têm,
+//   são N aulas independentes. Se UMA SÓ tem, é 1 aula com N turmas.
+//   Caso contrário (nenhuma tem ' - '), tratamos a / como separador disc/turma.
+// - Se não tem ' / ', faz split no último ' - ' (preserva hífens internos como
+//   "Fisica-Eletromagnetismo").
+function parseCelula(cel) {
+  cel = String(cel).trim();
+  if (!cel) return [];
+
+  if (cel.includes(' / ')) {
+    const parts = cel.split(' / ').map(s => s.trim()).filter(Boolean);
+    const withDash = parts.filter(p => p.includes(' - '));
+    if (withDash.length === parts.length) {
+      // Todas as partes têm ' - ': N aulas independentes
+      return parts.map(p => splitDisciplinaTurma(p));
+    } else if (withDash.length === 1) {
+      // Apenas uma parte tem ' - ': é 1 aula com N turmas
+      // Ex: "Quimica 1 - Eletrônica S1 / Eventos S1"
+      const dashed = withDash[0];
+      const idx = dashed.lastIndexOf(' - ');
+      const disc = dashed.slice(0, idx).trim();
+      // Coletar todas as turmas: a do dashed + as outras partes
+      const turmas = [];
+      for (const p of parts) {
+        if (p === dashed) {
+          turmas.push(dashed.slice(idx + 3).trim());
+        } else {
+          turmas.push(p);
+        }
+      }
+      return [{ disc, turma: turmas.join(' / ') }];
+    } else if (withDash.length === 0) {
+      // Nenhuma parte tem ' - ': "Disciplina / Turma"
+      // Casos: "Fisica-Eletromagnetismo / Matematica S7"
+      if (parts.length === 2) {
+        return [{ disc: parts[0], turma: parts[1] }];
+      }
+      // Mais de 2 partes sem hífen: provavelmente disciplina+turmas
+      // Caso extremo (R215): tratamos como disciplina única + lista de turmas
+      return [{ disc: parts[0], turma: parts.slice(1).join(' / ') }];
+    } else {
+      // Múltiplas com ' - ' e algumas sem: tratar as com ' - ' como aulas e
+      // as sem como turmas adicionais para a última aula.
+      const aulas = parts.map(p => p.includes(' - ') ? splitDisciplinaTurma(p) : { disc: null, turma: p });
+      const final = [];
+      for (const a of aulas) {
+        if (a.disc) final.push(a);
+        else if (final.length) final[final.length-1].turma += ' / ' + a.turma;
+      }
+      return final;
+    }
+  }
+
+  // Sem '/': simples
+  return [splitDisciplinaTurma(cel)];
+}
+
+function splitDisciplinaTurma(s) {
+  s = String(s).trim();
+  if (s.includes(' - ')) {
+    const idx = s.lastIndexOf(' - ');
+    return { disc: s.slice(0, idx).trim(), turma: s.slice(idx + 3).trim() };
+  }
+  return { disc: s, turma: '—' };
+}
+
+// Parser de célula no formato "slot único" do CSV:
+// "Disciplina - 10.401.36 B3S4 Matematica S7" → disc + turma
+// Localiza o código (\d+\.\d+\.\d+), tudo antes é disciplina (sem o
+// hífen final), tudo depois é a turma (limpando blocos B\d+S\d+ e salas).
+const SLOT_COD_RE = /\b\d+\.\d+\.\d+(?:-\d+)?\b/;
+const SLOT_BLOCO_RE = /\bB\d+S\d+\b/g;
+const SLOT_TURMA_RE = /\b(?:Eletrônica|Eventos|Matematica|Matemática|Informática|Informatica|ADS|CLEF|Música|Musica|Turismo|Redes|Pedagogia|Núcleo\s+de\s+Línguas(?:\s+(?:BÁSICO|INTERMEDIÁRIO))?|Núcelo\s+de\s+Línguas|Ensino\s+Médio\s+Extracurricular|Ensino\s+Superior\s+EXTRA)\b[^-]*?$/i;
+
+function parseCelulaSlotUnico(s) {
+  s = String(s||'').trim();
+  if (!s) return [];
+  const codMatch = s.match(SLOT_COD_RE);
+  if (!codMatch) return [{ disc: s, turma: '—' }];
+  const codIdx = codMatch.index, codLen = codMatch[0].length;
+  let disc = s.slice(0, codIdx).trim().replace(/\s*-\s*$/, '').trim();
+  let resto = s.slice(codIdx + codLen).trim();
+  resto = resto.replace(SLOT_BLOCO_RE, ' ').replace(/\s+/g, ' ').trim();
+  // Remover indicações de sala "Antigo Lab. Info. 2" e similares
+  resto = resto.replace(/Antigo\s+Lab\.[^A-ZÀ-Ú]*?(?=[A-ZÀ-Ú]|$)/g, '').trim();
+  let turma = '—';
+  if (resto) {
+    const tm = resto.match(SLOT_TURMA_RE);
+    turma = tm ? tm[0].trim().replace(/\s+/g, ' ') : resto;
+  }
+  // Limpar blocos que possam estar prefixando a disciplina
+  disc = disc.replace(SLOT_BLOCO_RE, ' ').replace(/\s+/g, ' ').trim();
+  return [{ disc, turma }];
+}
+
+// Parser de CSV simples: suporta aspas duplas para escapar separadores
+// e quebras de linha dentro de campos. Aspas duplas dentro de campos são
+// representadas como duas aspas seguidas ("").
+function parseCSV(text, sep) {
+  sep = sep || ',';
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+  let i = 0;
+  const n = text.length;
+  while (i < n) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i+1] === '"') { field += '"'; i += 2; continue; }
+        inQuotes = false; i++; continue;
+      }
+      field += c; i++; continue;
+    }
+    if (c === '"') { inQuotes = true; i++; continue; }
+    if (c === sep) { row.push(field); field = ''; i++; continue; }
+    if (c === '\r') { i++; continue; }
+    if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; i++; continue; }
+    field += c; i++;
+  }
+  // último campo/linha (se arquivo não termina em \n)
+  if (field.length > 0 || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows;
+}
+
+async function processXLSX(file) {
+  const nm = file.name.toLowerCase();
+  if (!nm.endsWith('.xlsx') && !nm.endsWith('.xls') && !nm.endsWith('.csv')) {
+    return alert('Selecione um arquivo .xlsx, .xls ou .csv.');
+  }
+  const sem = $('uploadSem').value;
+  if (!sem) return alert('Selecione um semestre de destino.');
+
+  const log = $('importLog');
+  log.style.display = 'block';
+  log.textContent = '📂 Abrindo planilha: ' + file.name + '...\n';
+
+  try {
+    let rows;
+
+    if (nm.endsWith('.csv')) {
+      // === CSV: ler como texto e parsear linha a linha ===
+      log.textContent += 'ℹ️ Detectado arquivo CSV.\n';
+      let text = await file.text();
+      // Remover BOM (UTF-8 BOM) se existir
+      if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+      // Detectar separador: ';' ou ',' (predominante na primeira linha)
+      const firstLine = text.split(/\r?\n/)[0] || '';
+      const sepSemic = (firstLine.match(/;/g) || []).length;
+      const sepComma = (firstLine.match(/,/g) || []).length;
+      const sep = sepSemic >= sepComma ? ';' : ',';
+      log.textContent += `ℹ️ Separador detectado: "${sep}"\n`;
+      // Parser de CSV simples (suporta aspas e separador escolhido)
+      rows = parseCSV(text, sep);
+      // Remover linhas totalmente vazias
+      rows = rows.filter(r => r.some(c => String(c||'').trim() !== ''));
+      // Limpeza opcional de marcadores [span_N](start_span)/(end_span) que
+      // podem aparecer em alguns CSVs exportados de planilhas com mesclagem
+      rows = rows.map(r => r.map(c => String(c||'')
+        .replace(/\[span_\d+\]\(start_span\)/g, '')
+        .replace(/\[span_\d+\]\(end_span\)/g, '')
+      ));
+    } else {
+      // === XLSX / XLS: usar SheetJS ===
+      // Carrega SheetJS via CDN (mesma origem das outras libs)
+      if (!window.XLSX) {
+        log.textContent += '⏳ Carregando SheetJS...\n';
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js', false);
+        log.textContent += '✅ SheetJS carregado\n';
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const wb = XLSX.read(arrayBuffer, { type: 'array' });
+      const sheetName = wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
+
+      // Converter sheet em array de arrays (linhas)
+      rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
+
+      // CASO ESPECIAL: planilha onde TUDO está na coluna A com ';' como
+      // separador interno (formato visto na Pasta.xlsx). Detectamos pela
+      // primeira linha conter "Professor;Horário;Segunda".
+      const r0 = (rows[0] && rows[0][0]) || '';
+      if (typeof r0 === 'string' && r0.includes(';') && r0.includes('Professor')) {
+        log.textContent += 'ℹ️ Detectado formato CSV-em-coluna-única (separador ";").\n';
+        rows = rows.map(r => {
+          const s = String(r[0] || '');
+          // remover marcadores [span_N](start_span) e (end_span)
+          const cleaned = s
+            .replace(/\[span_\d+\]\(start_span\)/g, '')
+          .replace(/\[span_\d+\]\(end_span\)/g, '');
+        return cleaned.split(';');
+      });
+    }
+    } // === FIM do branch XLSX/XLS ===
+
+    if (rows.length < 2) throw new Error('Planilha vazia ou sem cabeçalho.');
+
+    // Detectar índices das colunas pelo cabeçalho
+    const header = rows[0].map(c => String(c||'').trim().toLowerCase());
+    function findCol(names) {
+      for (const n of names) {
+        const idx = header.findIndex(h => h.includes(n));
+        if (idx >= 0) return idx;
+      }
+      return -1;
+    }
+    let colProf = findCol(['professor','docente']);
+    let colHora = findCol(['horário','horario','slot']);
+    let colSeg  = findCol(['segunda']);
+    let colTer  = findCol(['terça','terca']);
+    let colQua  = findCol(['quarta']);
+    let colQui  = findCol(['quinta']);
+    let colSex  = findCol(['sexta']);
+
+    // Caso sem cabeçalho global (CSV onde cada bloco começa com uma linha
+    // "Nome;;Seg;Ter;Qua;Qui;Sex"): a "linha 0" do array já é dado.
+    // Detecta-se quando colProf/colHora não foram encontrados mas as
+    // colunas de dias aparecem como "seg","ter",... no índice 2-6.
+    const semCabecalhoGlobal = (colProf < 0 || colHora < 0) &&
+      header.length >= 7 &&
+      /^seg/i.test(header[2]||'') && /^ter/i.test(header[3]||'') &&
+      /^qua/i.test(header[4]||'') && /^qui/i.test(header[5]||'') &&
+      /^sex/i.test(header[6]||'');
+
+    if (semCabecalhoGlobal) {
+      log.textContent += 'ℹ️ Sem cabeçalho global — usando colunas fixas (0=Professor, 1=Slot, 2-6=Dias).\n';
+      colProf = 0; colHora = 1;
+      colSeg = 2; colTer = 3; colQua = 4; colQui = 5; colSex = 6;
+    }
+
+    if (colProf < 0 || colHora < 0) throw new Error('Cabeçalho da planilha sem colunas "Professor" e "Horário"/"Slot".');
+    const colDias = [colSeg, colTer, colQua, colQui, colSex];
+    if (colDias.some(c => c < 0)) throw new Error('Cabeçalho sem todos os dias úteis (Segunda…Sexta).');
+
+    // Filtrar linhas que são apenas cabeçalho de bloco (Nome;;Seg;Ter;Qua;Qui;Sex)
+    // — slot vazio e dia[0] = "Seg" indica que essa linha não tem dado real.
+    const rowsAntes = rows.length;
+    rows = rows.filter((r, idx) => {
+      if (idx === 0 && !semCabecalhoGlobal) return true; // mantém cabeçalho global
+      const slotVal = String(r[colHora]||'').trim();
+      const dia0 = String(r[colSeg]||'').trim();
+      if (!slotVal && /^Seg$/i.test(dia0)) return false;
+      return true;
+    });
+    if (rows.length < rowsAntes) {
+      log.textContent += `🧹 ${rowsAntes - rows.length} linhas-cabeçalho de bloco filtradas.\n`;
+    }
+
+    log.textContent += `📊 ${rows.length - (semCabecalhoGlobal ? 0 : 1)} linhas a processar...\n`;
+
+    // Detectar formato:
+    // - Formato A (horário-range): segunda coluna como "Manhã 7:45-12:00" (cobre vários slots)
+    // - Formato B (slot-único): segunda coluna como "A Manha 7:45 - 8:45" (1 slot por linha)
+    //   No formato B, células mescladas no PDF original vêm com o segundo slot vazio,
+    //   então fazemos replicação automática (A→B e C→D no mesmo período).
+    function ehFormatoSlotUnico(rows, colHora) {
+      // Olhar as primeiras linhas com horário e ver se começam com letra A/B/C/D
+      let votos = 0, total = 0;
+      const inicio = semCabecalhoGlobal ? 0 : 1;
+      for (let r = inicio; r < Math.min(rows.length, 30); r++) {
+        const h = String(rows[r][colHora]||'').trim();
+        if (!h) continue;
+        total++;
+        if (/^[ABCD]\s+(Manh[aã]|Tarde|Noite)\s+\d/.test(h)) votos++;
+      }
+      return total > 0 && votos / total > 0.5;
+    }
+
+    // Estrutura: { nomeProf -> { grade:{dia:[]}, disc:{key:{nome,turma,ch}}, total:0 } }
+    const profsMap = {};
+    let linhasProcessadas = 0, linhasIgnoradas = 0;
+
+    if (ehFormatoSlotUnico(rows, colHora)) {
+      // ===== FORMATO B: 1 slot por linha (com replicação de mesclagens) =====
+      log.textContent += `ℹ️ Formato detectado: slot único por linha (com replicação de mesclagens A↔B e C↔D).\n`;
+
+      // Extrai a letra do slot (A,B,C,D) e período (Manha,Tarde,Noite)
+      function slotLetraPeriodo(s) {
+        const m = String(s||'').match(/^([ABCD])\s+(Manh[aã]|Tarde|Noite)(?:\s|$)/);
+        if (!m) return null;
+        return { letra: m[1], periodo: m[2].replace('ã','a') };
+      }
+      // Extrai os horários "07:45-08:45" do label
+      function slotTimes(s) {
+        const m = String(s||'').match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+        if (!m) return null;
+        function pad(t){const[h,mn]=t.split(':');return String(h).padStart(2,'0')+':'+mn;}
+        return [pad(m[1]), pad(m[2])];
+      }
+
+      // PASSAGEM 1: indexar todas as linhas por (prof, letra, periodo)
+      const profsRaw = {};
+      for (let r = (semCabecalhoGlobal ? 0 : 1); r < rows.length; r++) {
+        const row = rows[r];
+        const nome = String(row[colProf]||'').trim();
+        const slot = String(row[colHora]||'').trim();
+        if (!nome || !slot) { linhasIgnoradas++; continue; }
+        const sLP = slotLetraPeriodo(slot);
+        const sT = slotTimes(slot);
+        if (!sLP || !sT) {
+          log.textContent += `  ⚠️ L${r+1}: slot não reconhecido: "${slot}"\n`;
+          linhasIgnoradas++;
+          continue;
+        }
+        if (!profsRaw[nome]) profsRaw[nome] = { slots: {} };
+        const key = sLP.letra + '|' + sLP.periodo;
+        profsRaw[nome].slots[key] = {
+          times: sT,
+          dias: colDias.map(c => String(row[c]||'').trim())
+        };
+        linhasProcessadas++;
+      }
+
+      // PASSAGEM 2: replicar mesclagens A→B e C→D (mesmo período, sem recreio)
+      // O aSc TimeTables, ao exportar para CSV, coloca o conteúdo da célula
+      // mesclada SOMENTE na primeira linha do par (A ou C). Por isso só
+      // replicamos no sentido A→B e C→D — nunca o reverso, que causaria
+      // falsos positivos para aulas de 1h legítimas em B Manhã ou D Tarde.
+      const PARES = [['A','B'], ['C','D']];
+      const PERIODOS = ['Manha','Tarde','Noite'];
+      let replicados = 0;
+      for (const nome of Object.keys(profsRaw)) {
+        const slots = profsRaw[nome].slots;
+        for (const periodo of PERIODOS) {
+          for (const [primeiro, segundo] of PARES) {
+            const k1 = primeiro + '|' + periodo;
+            const k2 = segundo + '|' + periodo;
+            if (!slots[k1] || !slots[k2]) continue;
+            for (let di = 0; di < 5; di++) {
+              if (slots[k1].dias[di] && !slots[k2].dias[di]) {
+                slots[k2].dias[di] = slots[k1].dias[di];
+                replicados++;
+              }
+            }
+          }
+        }
+      }
+      if (replicados > 0) log.textContent += `🔁 ${replicados} células replicadas (mesclagens detectadas).\n`;
+
+      // PASSAGEM 3: construir grade final
+      for (const nome of Object.keys(profsRaw)) {
+        if (!profsMap[nome]) {
+          profsMap[nome] = {
+            grade: { Segunda:[], Terça:[], Quarta:[], Quinta:[], Sexta:[], Sábado:[] },
+            disc: {},
+            total: 0
+          };
+        }
+        const p = profsMap[nome];
+        for (const slotKey of Object.keys(profsRaw[nome].slots)) {
+          const sd = profsRaw[nome].slots[slotKey];
+          const [si, sf] = sd.times;
+          for (let di = 0; di < 5; di++) {
+            const cel = sd.dias[di];
+            if (!cel) continue;
+            const aulas = parseCelulaSlotUnico(cel);
+            const dia = DIAS_PLANILHA[di];
+            for (const a of aulas) {
+              p.grade[dia].push({
+                inicio: si, fim: sf,
+                atividade: a.disc + ' — ' + a.turma,
+                tipo: 'aula',
+                turma: a.turma
+              });
+              p.total++;
+              const k = a.disc + '|' + a.turma;
+              if (!p.disc[k]) p.disc[k] = { nome: a.disc, turma: a.turma, ch: 0 };
+              p.disc[k].ch++;
+            }
+          }
+        }
+      }
+    } else {
+      // ===== FORMATO A: horário-range (1 linha pode cobrir múltiplos slots) =====
+    for (let r = (semCabecalhoGlobal ? 0 : 1); r < rows.length; r++) {
+      const row = rows[r];
+      const nome = String(row[colProf]||'').trim();
+      const hora = String(row[colHora]||'').trim();
+      if (!nome || !hora) { linhasIgnoradas++; continue; }
+      const slotsResolved = parseHorarioRange(hora);
+      if (slotsResolved.length === 0) {
+        log.textContent += `  ⚠️ L${r+1}: horário não reconhecido: "${hora}"\n`;
+        linhasIgnoradas++;
+        continue;
+      }
+      // Garantir que o prof existe no mapa
+      if (!profsMap[nome]) {
+        profsMap[nome] = {
+          grade: { Segunda:[], Terça:[], Quarta:[], Quinta:[], Sexta:[], Sábado:[] },
+          disc: {},
+          total: 0
+        };
+      }
+      const p = profsMap[nome];
+
+      for (let di = 0; di < 5; di++) {
+        const cel = String(row[colDias[di]]||'').trim();
+        if (!cel) continue;
+        const aulas = parseCelula(cel);
+        const dia = DIAS_PLANILHA[di];
+        for (const a of aulas) {
+          for (const [si, sf] of slotsResolved) {
+            const ativ = a.disc + ' — ' + a.turma;
+            p.grade[dia].push({
+              inicio: si, fim: sf,
+              atividade: ativ,
+              tipo: 'aula',
+              turma: a.turma
+            });
+            p.total++;
+            const key = a.disc + '|' + a.turma;
+            if (!p.disc[key]) p.disc[key] = { nome: a.disc, turma: a.turma, ch: 0 };
+            p.disc[key].ch++;
+          }
+        }
+      }
+      linhasProcessadas++;
+    }
+    } // fim else (formato A)
+
+    const profs = Object.entries(profsMap).map(([nome, p]) => ({
+      nome,
+      grade: p.grade,
+      disciplinas: Object.values(p.disc),
+      total_aulas: p.total
+    }));
+
+    log.textContent += `✅ ${linhasProcessadas} linhas processadas, ${linhasIgnoradas} ignoradas\n`;
+    log.textContent += `📊 ${profs.length} docentes extraídos:\n`;
+    for (const pr of profs) {
+      log.textContent += `   • ${pr.nome}: ${pr.total_aulas}h, ${pr.disciplinas.length} disciplinas\n`;
+    }
+    log.scrollTop = log.scrollHeight;
+
+    if (profs.length === 0) throw new Error('Nenhum professor extraído.');
+    log.textContent += `\n⏳ Salvando no Firestore (semestre: ${sem})...\n`;
+
+    // Save to Firestore with batch
+    const batchSize = 400;
+    for (let i = 0; i < profs.length; i += batchSize) {
+      const batch = writeBatch(db);
+      const chunk = profs.slice(i, i + batchSize);
+      chunk.forEach(prof => {
+        const docId = sanitize(prof.nome);
+        const ref = doc(db, 'horarios', `${sem}_${docId}`);
+        batch.set(ref, {
+          nome: prof.nome,
+          semestre: sem,
+          campus: 'Canindé',
+          grade: prof.grade,
+          disciplinas: prof.disciplinas,
+          total_aulas: prof.total_aulas,
+          atualizado: new Date().toISOString(),
+          fonte: 'xlsx_import'
+        });
+      });
+      await batch.commit();
+    }
+
+    log.textContent += `✅ ${profs.length} docentes salvos com sucesso!\n`;
+    toast(`${profs.length} docentes importados para ${sem}`);
+    await loadPublishedStats();
+
+  } catch(e) {
+    log.textContent += `❌ ERRO: ${e.message}\n`;
+    console.error(e);
+  }
+}
+
+function sanitize(name) {
+  return name.replace(/[\/\.#$\[\]]/g, '_');
+}
+
+
+function loadScript(src, isModule) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    if (isModule) s.type = 'module';
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+window.limparSemestre = async function() {
+  const sem = prompt('Digite o código do semestre que deseja LIMPAR (ex: 2025.2).\n\nATENÇÃO: Isso apagará TODOS os horários deste semestre!');
+  if (!sem) return;
+  if (!confirm('Tem certeza que deseja apagar TODOS os dados de horários do semestre "' + sem + '"?\n\nEsta ação é irreversível!')) return;
+  
+  try {
+    const q = query(collection(db, 'horarios'), where('semestre', '==', sem));
+    const snap = await getDocs(q);
+    let count = 0;
+    const batchSize = 400;
+    let batch = writeBatch(db);
+    
+    snap.forEach(d => {
+      batch.delete(d.ref);
+      count++;
+      if (count % batchSize === 0) {
+        batch.commit();
+        batch = writeBatch(db);
+      }
+    });
+    
+    if (count % batchSize !== 0) await batch.commit();
+    
+    toast(count + ' documentos apagados do semestre ' + sem);
+    await loadPublishedStats();
+  } catch(e) {
+    alert('Erro: ' + e.message);
+  }
+};
+
+</script>
+</body>
+</html>
