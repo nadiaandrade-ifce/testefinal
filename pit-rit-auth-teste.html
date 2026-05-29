@@ -484,9 +484,11 @@ function carregarDadosProf(d,nm){
   aba("id");
   // Tentar restaurar rascunho salvo (que pode conter pesquisa, extensão, gestão, RIT, etc.)
   restaurarRascunho(nm,semestreAtual).then(function(restaurou){
-    if(!restaurou){
-      // Sem rascunho — manter os dados base que já foram aplicados
-    }
+    // Libera o auto-save somente após a restauração terminar (evita race condition
+    // onde o auto-save grava antes do rascunho ser aplicado).
+    _carregando=false;
+  }).catch(function(){
+    _carregando=false;
   });
 }
 
@@ -534,6 +536,7 @@ function bloquearAbas(){
 function onProf(){
   var nm=$("psel").value;if(!nm)return;
   profSelecionado=false;
+  _carregando=true; // bloqueia auto-save durante o carregamento
   bloquearAbas();
 
   var docId=semestreAtual+"_"+sanitizeDocId(nm);
@@ -555,15 +558,18 @@ function onProf(){
           desbloquearAbas();
         } else {
           profSelecionado=false;
+          _carregando=false;
           desbloquearAbas();
           alert("Sem dados de \""+nm+"\" para o semestre "+semestreAtual+".\n\nPeça ao administrador para importar e publicar os horários do semestre, ou abra um JSON salvo anteriormente pelo botão \"Abrir\".");
           E=newE();E.n=nm;E.s=semestreAtual;applyE(E);
         }
       }).catch(function(){
+        _carregando=false;
         desbloquearAbas();
       });
     }
   }).catch(function(e){
+    _carregando=false;
     desbloquearAbas();
     alert("Erro de conexão. Verifique sua internet e tente novamente.");
   });
@@ -1022,6 +1028,7 @@ function maskSiape(s){
 // Coleção: "rascunhos", doc: "{email}_{semestre}_{profNome}"
 var _autoSaveTimer=null;
 var _userInteracted=false; // só salva depois que o usuário fez alguma mudança real
+var _carregando=false; // bloqueia auto-save enquanto carrega/restaura dados (anti race-condition)
 function marcarInteracao(){_userInteracted=true}
 // marca interação em qualquer keypress/change na área principal
 document.addEventListener("input",function(e){
@@ -1034,6 +1041,7 @@ function autoSave(){
   if(!currentUser||!currentUser.email)return;
   if(!profSelecionado||!E.n||!E.s)return;
   if(!_userInteracted)return;
+  if(_carregando)return; // não salvar durante carregamento/restauração de dados
   clearTimeout(_autoSaveTimer);
   _autoSaveTimer=setTimeout(function(){
     try{
@@ -1059,18 +1067,66 @@ function autoSave(){
   },2000); // 2s debounce — espera o prof parar de digitar
 }
 
-// Restaurar rascunho salvo do Firestore (chamado após selecionar professor)
+// Restaurar rascunho salvo do Firestore (chamado após selecionar professor).
+// MERGE INTELIGENTE: o rascunho traz de volta o que o professor preencheu
+// (pesquisa, extensão, gestão, comissões, orientação, RIT, atendimentos
+// adicionados na grade), MAS nunca sobrescreve a grade de AULAS vinda do
+// admin/Firestore por uma grade mais pobre. A grade de aulas é a fonte da
+// verdade do quadro de horários oficial.
 function restaurarRascunho(profNome,semestre){
   if(!currentUser||!currentUser.email)return Promise.resolve(false);
   var docId=currentUser.email.toLowerCase().replace(/[^a-z0-9@._-]/g,"")+"_"+semestre+"_"+sanitizeDocId(profNome);
+  // Guardar a grade oficial (com aulas) que veio do Firestore ANTES de mexer
+  var gradeOficial={};
+  DIAS.forEach(function(dia){gradeOficial[dia]=(E.grade[dia]||[]).slice()});
+  function contarAulas(grade){
+    var n=0;DIAS.forEach(function(dia){(grade[dia]||[]).forEach(function(b){
+      var tp=b.tp||b.tipo||"aula";if(tp==="aula"||tp==="aula_externa")n++;
+    })});return n;
+  }
+  var aulasOficiais=contarAulas(gradeOficial);
   return db.collection("rascunhos").doc(docId).get().then(function(snap){
     if(!snap.exists)return false;
     var d=snap.data();
     if(!d.dados)return false;
     try{
       var saved=JSON.parse(d.dados);
-      // Verificar se o rascunho é mais recente que os dados do Firestore
-      // (o professor pode ter feito alterações depois da última importação)
+      if(!saved||typeof saved!=="object")return false;
+      var aulasRascunho=contarAulas(saved.grade||{});
+
+      // Decidir a grade final:
+      // - Se o rascunho tem MENOS aulas que o Firestore (ou zero), a grade
+      //   oficial vence. Mas preservamos os slots NÃO-aula que o professor
+      //   adicionou no rascunho (atendimento, preparação, etc.).
+      // - Se o rascunho tem aulas iguais/mais, usamos a grade do rascunho
+      //   (professor pode ter ajustado manualmente).
+      var gradeFinal={};
+      if(aulasRascunho < aulasOficiais){
+        // Base: grade oficial (aulas). Acrescenta slots não-aula do rascunho.
+        DIAS.forEach(function(dia){
+          gradeFinal[dia]=(gradeOficial[dia]||[]).slice();
+          (saved.grade&&saved.grade[dia]||[]).forEach(function(b){
+            var tp=b.tp||b.tipo||"aula";
+            if(tp!=="aula"&&tp!=="aula_externa"){
+              // Evitar duplicar se já existe no mesmo horário
+              var jaTem=gradeFinal[dia].some(function(x){return x.i===b.i&&x.f===b.f&&(x.tp||x.tipo)===tp});
+              if(!jaTem)gradeFinal[dia].push(b);
+            }
+          });
+        });
+      } else {
+        // Rascunho tem aulas suficientes — usar a grade dele
+        DIAS.forEach(function(dia){gradeFinal[dia]=(saved.grade&&saved.grade[dia]||[]).slice()});
+      }
+
+      // Aplicar o rascunho (campos de pesquisa/extensão/gestão/RIT/etc.)
+      // mas com a grade decidida acima.
+      saved.grade=gradeFinal;
+      // Garantir que a CH de aulas (au.t) reflita a grade oficial se ela venceu
+      if(aulasRascunho < aulasOficiais && E.au && saved.au){
+        saved.au.t = E.au.t;
+        saved.au.disc = E.au.disc;
+      }
       applyE(saved);
       profSelecionado=true;
       var ind=document.getElementById("syncIndicator");
