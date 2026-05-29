@@ -482,14 +482,6 @@ function carregarDadosProf(d,nm){
   }
   applyE(E);
   aba("id");
-  // Tentar restaurar rascunho salvo (que pode conter pesquisa, extensão, gestão, RIT, etc.)
-  restaurarRascunho(nm,semestreAtual).then(function(restaurou){
-    // Libera o auto-save somente após a restauração terminar (evita race condition
-    // onde o auto-save grava antes do rascunho ser aplicado).
-    _carregando=false;
-  }).catch(function(){
-    _carregando=false;
-  });
 }
 
 // Restaura último prof+semestre escolhido pelo usuário (se houver memória)
@@ -536,7 +528,6 @@ function bloquearAbas(){
 function onProf(){
   var nm=$("psel").value;if(!nm)return;
   profSelecionado=false;
-  _carregando=true; // bloqueia auto-save durante o carregamento
   bloquearAbas();
 
   var docId=semestreAtual+"_"+sanitizeDocId(nm);
@@ -558,18 +549,15 @@ function onProf(){
           desbloquearAbas();
         } else {
           profSelecionado=false;
-          _carregando=false;
           desbloquearAbas();
           alert("Sem dados de \""+nm+"\" para o semestre "+semestreAtual+".\n\nPeça ao administrador para importar e publicar os horários do semestre, ou abra um JSON salvo anteriormente pelo botão \"Abrir\".");
           E=newE();E.n=nm;E.s=semestreAtual;applyE(E);
         }
       }).catch(function(){
-        _carregando=false;
         desbloquearAbas();
       });
     }
   }).catch(function(e){
-    _carregando=false;
     desbloquearAbas();
     alert("Erro de conexão. Verifique sua internet e tente novamente.");
   });
@@ -1023,121 +1011,31 @@ function maskSiape(s){
   return s.slice(0,s.length-4)+"****";
 }
 
-// === AUTO-SAVE NO FIRESTORE ===
-// Salva o estado E no Firestore automaticamente a cada alteração (debounced).
-// Coleção: "rascunhos", doc: "{email}_{semestre}_{profNome}"
+// === AUTO-SAVE NO FIRESTORE (DESATIVADO) ===
+// Antes salvava o estado E como "rascunho" no Firestore. Foi desativado junto com
+// restaurarRascunho porque a restauração estava sobrescrevendo dados frescos do banco.
+// Para preservar edições agora, o usuário usa o botão "Salvar" (download de JSON).
 var _autoSaveTimer=null;
-var _userInteracted=false; // só salva depois que o usuário fez alguma mudança real
-var _carregando=false; // bloqueia auto-save enquanto carrega/restaura dados (anti race-condition)
+var _userInteracted=false;
 function marcarInteracao(){_userInteracted=true}
-// marca interação em qualquer keypress/change na área principal
 document.addEventListener("input",function(e){
   if(e.target&&(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA"||e.target.tagName==="SELECT")){
     if(profSelecionado)_userInteracted=true;
   }
 });
 function autoSave(){
-  // Só dispara se: usuário logado, professor selecionado, dados mínimos preenchidos, interação real
-  if(!currentUser||!currentUser.email)return;
-  if(!profSelecionado||!E.n||!E.s)return;
-  if(!_userInteracted)return;
-  if(_carregando)return; // não salvar durante carregamento/restauração de dados
-  clearTimeout(_autoSaveTimer);
-  _autoSaveTimer=setTimeout(function(){
-    try{
-      lerE();
-    }catch(e){return}
-    var docId=currentUser.email.toLowerCase().replace(/[^a-z0-9@._-]/g,"")+"_"+E.s+"_"+sanitizeDocId(E.n);
-    db.collection("rascunhos").doc(docId).set({
-      email:currentUser.email.toLowerCase(),
-      prof:E.n,
-      semestre:E.s,
-      dados:JSON.stringify(E),
-      atualizado:new Date().toISOString()
-    }).then(function(){
-      var ind=document.getElementById("syncIndicator");
-      if(ind){ind.textContent="✅ Salvo";ind.style.color="#4CAF50";setTimeout(function(){if(ind.textContent==="✅ Salvo")ind.textContent=""},2000)}
-    }).catch(function(err){
-      // Silenciar — não tem como o professor resolver erro de regras do Firestore
-      // Só mostra no console para debug.
-      console.warn("Auto-save: não foi possível salvar rascunho remoto.",err&&err.message?err.message:err);
-      var ind=document.getElementById("syncIndicator");
-      if(ind){ind.textContent="";ind.style.color=""}
-    });
-  },2000); // 2s debounce — espera o prof parar de digitar
+  // Função mantida para compatibilidade, mas sem fazer nada.
+  return;
 }
 
-// Restaurar rascunho salvo do Firestore (chamado após selecionar professor).
-// MERGE INTELIGENTE: o rascunho traz de volta o que o professor preencheu
-// (pesquisa, extensão, gestão, comissões, orientação, RIT, atendimentos
-// adicionados na grade), MAS nunca sobrescreve a grade de AULAS vinda do
-// admin/Firestore por uma grade mais pobre. A grade de aulas é a fonte da
-// verdade do quadro de horários oficial.
+// Restaurar rascunho salvo do Firestore (DESATIVADO)
+// Motivo: a restauração automática estava sobrescrevendo a grade fresca vinda do banco
+// com rascunhos antigos vazios. Agora o usuário usa Salvar/Abrir (JSON) para preservar edições.
 function restaurarRascunho(profNome,semestre){
-  if(!currentUser||!currentUser.email)return Promise.resolve(false);
-  var docId=currentUser.email.toLowerCase().replace(/[^a-z0-9@._-]/g,"")+"_"+semestre+"_"+sanitizeDocId(profNome);
-  // Guardar a grade oficial (com aulas) que veio do Firestore ANTES de mexer
-  var gradeOficial={};
-  DIAS.forEach(function(dia){gradeOficial[dia]=(E.grade[dia]||[]).slice()});
-  function contarAulas(grade){
-    var n=0;DIAS.forEach(function(dia){(grade[dia]||[]).forEach(function(b){
-      var tp=b.tp||b.tipo||"aula";if(tp==="aula"||tp==="aula_externa")n++;
-    })});return n;
-  }
-  var aulasOficiais=contarAulas(gradeOficial);
-  return db.collection("rascunhos").doc(docId).get().then(function(snap){
-    if(!snap.exists)return false;
-    var d=snap.data();
-    if(!d.dados)return false;
-    try{
-      var saved=JSON.parse(d.dados);
-      if(!saved||typeof saved!=="object")return false;
-      var aulasRascunho=contarAulas(saved.grade||{});
-
-      // Decidir a grade final:
-      // - Se o rascunho tem MENOS aulas que o Firestore (ou zero), a grade
-      //   oficial vence. Mas preservamos os slots NÃO-aula que o professor
-      //   adicionou no rascunho (atendimento, preparação, etc.).
-      // - Se o rascunho tem aulas iguais/mais, usamos a grade do rascunho
-      //   (professor pode ter ajustado manualmente).
-      var gradeFinal={};
-      if(aulasRascunho < aulasOficiais){
-        // Base: grade oficial (aulas). Acrescenta slots não-aula do rascunho.
-        DIAS.forEach(function(dia){
-          gradeFinal[dia]=(gradeOficial[dia]||[]).slice();
-          (saved.grade&&saved.grade[dia]||[]).forEach(function(b){
-            var tp=b.tp||b.tipo||"aula";
-            if(tp!=="aula"&&tp!=="aula_externa"){
-              // Evitar duplicar se já existe no mesmo horário
-              var jaTem=gradeFinal[dia].some(function(x){return x.i===b.i&&x.f===b.f&&(x.tp||x.tipo)===tp});
-              if(!jaTem)gradeFinal[dia].push(b);
-            }
-          });
-        });
-      } else {
-        // Rascunho tem aulas suficientes — usar a grade dele
-        DIAS.forEach(function(dia){gradeFinal[dia]=(saved.grade&&saved.grade[dia]||[]).slice()});
-      }
-
-      // Aplicar o rascunho (campos de pesquisa/extensão/gestão/RIT/etc.)
-      // mas com a grade decidida acima.
-      saved.grade=gradeFinal;
-      // Garantir que a CH de aulas (au.t) reflita a grade oficial se ela venceu
-      if(aulasRascunho < aulasOficiais && E.au && saved.au){
-        saved.au.t = E.au.t;
-        saved.au.disc = E.au.disc;
-      }
-      applyE(saved);
-      profSelecionado=true;
-      var ind=document.getElementById("syncIndicator");
-      if(ind){ind.textContent="📄 Rascunho restaurado";ind.style.color="#1565C0";setTimeout(function(){ind.textContent=""},3000)}
-      return true;
-    }catch(x){return false}
-  }).catch(function(){return false});
+  return Promise.resolve(false);
 }
 
-// Hook: chamar autoSave quando o formulário é alterado
-// Intercepta calc() para disparar autoSave junto
+// Hook: calc() chama autoSave (que agora não faz nada — segurança para não quebrar fluxo)
 var _originalCalc=calc;
 calc=function(){_originalCalc.apply(this,arguments);autoSave();};
 
