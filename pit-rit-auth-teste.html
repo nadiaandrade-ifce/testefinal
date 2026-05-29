@@ -143,7 +143,7 @@ Entrar com Google
 <b>5.</b> Na aba <b>Grade Semanal</b>, registre seus <b>horários de atendimento a alunos</b> e confira as aulas.<br>
 <b>6.</b> Abra a aba <b>RIT</b> e clique em <b>Gerar RIT automaticamente</b> para pré-preencher o Relatório com base no PIT.<br>
 <b>7.</b> Use o botão <b>Publicar</b> (barra superior) para enviar seus horários de aula e atendimento a alunos ao sistema de consulta.<br>
-<b>8.</b> Gere os arquivos PDF (barra superior) e anexe ao seu <b>Processo SEI</b> com um despacho de encaminhamento para a coordenação do curso onde você possui maior CH.<br>
+<b>8.</b> Clique em <b>Gerar PIT</b> e <b>Gerar RIT</b> (barra superior) para copiar o conteúdo e colá-lo diretamente em um documento do seu <b>Processo SEI</b>, assinando lá mesmo. Encaminhe com um despacho para a coordenação do curso onde você possui maior CH.<br>
 <b>9.</b> O sistema utiliza a <b>planilha atualizada da Resolução 171/2024</b> (Anexos I e II) para alimentar os pesos, multiplicadores e limites de carga horária. Em caso de dúvidas sobre algum item, <a href="./Planilha_Carga_Horaria_Docente_Res171.xlsx" download style="color:#1565C0;text-decoration:underline">clique aqui</a> para baixar a planilha de referência e consultá-la.<br>
 <b>10.</b> <b>Documentos institucionais de referência</b> utilizados na construção do sistema:<br>
 <span style="display:inline-block;margin-left:18px;font-size:12px;line-height:1.9">
@@ -537,9 +537,15 @@ function onProf(){
       carregarDadosProf(snap.data(),nm);
       desbloquearAbas();
     } else if(snap.exists){
-      // Firestore tem dados parciais (sem grade) — usar mesmo assim
+      // Documento existe mas a GRADE está vazia (importação sem aulas ou
+      // publicada com versão antiga do admin). Carrega o que tiver e avisa.
       carregarDadosProf(snap.data(),nm);
       desbloquearAbas();
+      var d=snap.data();
+      var nDisc=(d.disciplinas||[]).length;
+      alert("⚠️ Os horários de \""+nm+"\" para "+semestreAtual+" foram encontrados, mas SEM a grade de aulas preenchida.\n\n"+
+        (nDisc>0?("Há "+nDisc+" disciplina(s) registrada(s), mas a distribuição semanal está vazia.\n\n"):"")+
+        "Isso geralmente acontece quando a importação foi feita com uma versão antiga do painel admin. Peça ao administrador para reimportar e republicar a planilha de "+semestreAtual+" usando o painel admin atualizado.");
     } else {
       // Tenta docId legado (sem prefixo de semestre)
       var docIdLegacy=sanitizeDocId(nm);
@@ -1131,37 +1137,8 @@ function confirmarNomeSimples(){
 function escolherMetodo(tipo){
   lerE();
   if(!E.i||!E.i.trim()){alert("Preencha o campo SIAPE na aba Identificação antes de gerar.");return}
-  var nomeDoc=tipo==="PIT"?"Plano Individual de Trabalho":"Relatório Individual de Trabalho";
-  var m=document.getElementById("modalMetodo");
-  if(!m){
-    m=document.createElement("div");
-    m.id="modalMetodo";
-    m.style.cssText="display:flex;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:20px";
-    document.body.appendChild(m);
-  }
-  m.innerHTML='<div style="background:#fff;border-radius:14px;max-width:600px;width:100%;padding:26px;box-shadow:0 8px 32px rgba(0,0,0,.25)">'+
-    '<div style="font-size:17px;font-weight:700;color:#1B5E20;margin-bottom:4px">Gerar '+tipo+'</div>'+
-    '<div style="font-size:12.5px;color:#666;margin-bottom:20px">'+esc(nomeDoc)+' — escolha como deseja prosseguir. Ambos os caminhos resultam em um documento assinado para anexar ao SEI.</div>'+
-    '<div style="display:flex;flex-direction:column;gap:12px">'+
-      // Opção A — copiar/colar no SEI
-      '<button onclick="document.getElementById(\'modalMetodo\').style.display=\'none\';copiarParaSEI(\''+tipo+'\')" '+
-      'style="text-align:left;padding:16px 18px;background:#F1F8E9;border:2px solid #AED581;border-radius:10px;cursor:pointer;transition:.15s" '+
-      'onmouseover="this.style.borderColor=\'#7CB342\'" onmouseout="this.style.borderColor=\'#AED581\'">'+
-      '<div style="font-size:14px;font-weight:700;color:#33691E;margin-bottom:4px">📋 Opção 1 — Copiar e colar no SEI</div>'+
-      '<div style="font-size:12px;color:#558B2F;line-height:1.5">Cola o conteúdo direto em um documento do SEI e assina lá mesmo, sem sair do sistema. Não precisa baixar arquivo nem usar outro site.</div>'+
-      '</button>'+
-      // Opção B — baixar PDF e assinar gov.br
-      '<button onclick="document.getElementById(\'modalMetodo\').style.display=\'none\';'+(tipo==="PIT"?"pdfPIT()":"pdfRIT()")+'" '+
-      'style="text-align:left;padding:16px 18px;background:#E3F2FD;border:2px solid #90CAF9;border-radius:10px;cursor:pointer;transition:.15s" '+
-      'onmouseover="this.style.borderColor=\'#42A5F5\'" onmouseout="this.style.borderColor=\'#90CAF9\'">'+
-      '<div style="font-size:14px;font-weight:700;color:#1565C0;margin-bottom:4px">📄 Opção 2 — Baixar PDF e assinar pelo gov.br</div>'+
-      '<div style="font-size:12px;color:#1976D2;line-height:1.5">Baixa o PDF formatado e abre o assinador oficial gov.br (assinador.iti.br). Depois você anexa o PDF assinado ao SEI como documento externo.</div>'+
-      '</button>'+
-    '</div>'+
-    '<div style="text-align:right;margin-top:18px">'+
-    '<button onclick="document.getElementById(\'modalMetodo\').style.display=\'none\'" style="padding:9px 18px;background:#f5f5f5;color:#333;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>'+
-    '</div></div>';
-  m.style.display="flex";
+  // PDF removido — agora sempre gera via copiar/colar no SEI (processo padronizado).
+  copiarParaSEI(tipo);
 }
 
 function copiarParaSEI(tipo){
@@ -1204,31 +1181,50 @@ function copiarParaSEI(tipo){
     linha("2. MANUTENÇÃO",v.mT+"h",true);
     linha("2.1 Preparação",v.mP+"h");
     linha("2.2 Atendimento",v.mA+"h");
-    if(E.dsg.prim>0)linha("2.3 Design educacional EaD (1ª oferta)",v.dPrim+"h");
-    if(E.dsg.rev>0)linha("2.4 Revisão de matriz de design educacional EaD",v.dRev+"h");
+    linha("2.3 Design educacional EaD (1ª oferta)",v.dPrim+"h");
+    linha("2.4 Revisão de matriz de design educacional EaD",v.dRev+"h");
     linha("3. APOIO (fixo)","2h",true);
     linha("4. ORIENTAÇÃO",v.oT+"h",true);
     linha("5. EXTRACURRICULAR",v.eT+"h",true);
-    if(v.mEadT>0){
-      linha("6. MATERIAIS DIDÁTICOS - REGULARES (EaD)",v.mEadT+"h",true);
-      if(E.matEad.video>0)linha("6.1 Videoaulas",E.matEad.video+" un.");
-      if(E.matEad.livro>0)linha("6.2 Livros",E.matEad.livro+" un.");
+    linha("6. MATERIAIS DIDÁTICOS - REGULARES (EaD)",v.mEadT+"h",true);
+    linha("6.1 Videoaulas",(E.matEad.video||0)+" un.");
+    linha("6.2 Livros",(E.matEad.livro||0)+" un.");
+
+    // Helper: lista TODOS os subitens de uma categoria do PIT (de LIM),
+    // mostrando a CH preenchida pelo usuário ou "0h" quando não preenchido.
+    // O match é feito pelo número do item (ex: "7.1") no início do tipo.
+    function listarTodos(categoria){
+      (LIM[categoria]||[]).forEach(function(opt){
+        // Número do item, ex.: "7.1" de "7.1 Coord. projeto..."
+        var num=(opt.n.match(/^\d+\.\d+/)||[""])[0];
+        // Soma a CH de todas as entradas do usuário que correspondem a este item
+        var chTotal=0, temDetalhe=false, detalhes=[];
+        (E[categoria]||[]).forEach(function(x){
+          var xnum=(String(x.tipo||"").match(/^\d+\.\d+/)||[""])[0];
+          if(xnum===num){
+            chTotal+=Number(x.ch)||0;
+            if(x.detalhe&&x.detalhe.trim()){temDetalhe=true;detalhes.push(x.detalhe.trim())}
+          }
+        });
+        var rotulo=opt.n;
+        if(temDetalhe)rotulo+=" — "+detalhes.join("; ");
+        linha(rotulo,chTotal+"h");
+      });
     }
+
     linha("7. PESQUISA APLICADA",v.pT+"h",true);
-    E.pesquisa.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+    listarTodos("pesquisa");
     linha("8. EXTENSÃO",v.xT+"h",true);
-    E.extensao.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
-    if(v.mFicEadT>0){
-      linha("9. MATERIAIS DIDÁTICOS - FIC (EaD)",v.mFicEadT+"h",true);
-      if(E.matFicEad.video>0)linha("9.1 Videoaulas FIC",E.matFicEad.video+" un.");
-      if(E.matFicEad.livro>0)linha("9.2 Livros FIC",E.matFicEad.livro+" un.");
-    }
+    listarTodos("extensao");
+    linha("9. MATERIAIS DIDÁTICOS - FIC (EaD)",v.mFicEadT+"h",true);
+    linha("9.1 Videoaulas FIC",(E.matFicEad.video||0)+" un.");
+    linha("9.2 Livros FIC",(E.matFicEad.livro||0)+" un.");
     if(E.r!=="20"){
       linha("10. GESTÃO",v.gT+"h",true);
-      E.gestao.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+      listarTodos("gestao");
     }
     linha("11. COMISSÕES/REPRESENTAÇÃO",v.cT+"h",true);
-    E.comissoes.forEach(function(x){linha(x.tipo+" - "+x.detalhe,x.ch+"h")});
+    listarTodos("comissoes");
     linha("TOTAL",v.tot+"h",true);
     h+="</table>";
     if(v.tot>rg.t){
